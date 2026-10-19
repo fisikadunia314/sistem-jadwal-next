@@ -1,0 +1,26 @@
+# Dependencies — jangan upload, dibuat ulang dengan npm install
+node_modules/
+
+# Hasil build Next.js
+.next/
+out/
+
+# Database lokal & file sementara SQLite
+# Data awal tetap aman dari data/seed.json saat aplikasi pertama dijalankan
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# File rahasia / konfigurasi lokal
+.env
+.env*.local
+
+# Log & file sistem
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

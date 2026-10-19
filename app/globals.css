@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+/* scrollbar tipis agar papan & sidebar nyaman di semua device */
+* { scrollbar-width: thin; scrollbar-color: rgb(148 163 184) transparent; }
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-thumb { background: rgb(148 163 184); border-radius: 999px; }
+
+/* jaga isi halaman tidak melebar melewati layar kecil */
+.drawer-content main { min-width: 0; }
+
+@keyframes toast-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+.toast-in { animation: toast-in .25s ease-out; }
