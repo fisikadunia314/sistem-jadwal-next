@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MermaidDiagram from "@/components/MermaidDiagram";
 
 export const metadata = { title: "Knowledge Base — Sistem Jadwal" };
 
@@ -28,6 +29,64 @@ const workflow = [
   ["5. Nilai hasil", "Evaluator menghitung hard violation dan soft penalty. Skor gabungan = 10.000 × hard + soft."],
   ["6. Terapkan bila layak", "Pada mode Adu Model, sistem hanya menerapkan hasil valid terbaik (hard = 0 dan soft terendah) bila opsi terapkan dipilih."],
 ];
+
+
+const FLOW_MAIN = `flowchart LR
+  A["Baca data DB<br/>guru · mapel · kelas · penugasan<br/>ketidaktersediaan · Aturan"] --> B["Bentuk unit<br/>JP menjadi 2JP + 1JP<br/>(pola blok)"]
+  B --> C["Siapkan domain<br/>slot sah tiap unit"]
+  C --> D["Model mencari<br/>CP-SAT / GA / Tabu<br/>sesuai timeout"]
+  D --> E["Evaluasi penuh<br/>hard &amp; soft dihitung<br/>ulang dari nol"]
+  E --> F{"hard = 0?"}
+  F -- Ya --> G["Simpan run<br/>boleh diterapkan<br/>ke papan"]
+  F -- Tidak --> H["Ditolak<br/>lihat diagnosis<br/>&amp; longgarkan Aturan"]
+  classDef ok fill:#dcfce7,stroke:#22c55e,color:#14532d;
+  classDef bad fill:#fee2e2,stroke:#ef4444,color:#7f1d1d;
+  class G ok;
+  class H bad;`;
+
+const FLOW_CPSAT = `flowchart LR
+  A["Pra-cek / preflight<br/>JP guru &amp; kelas vs slot seminggu<br/>unit tanpa slot sah"] --> B["Bangun model<br/>variabel boolean x(unit, slot)<br/>ExactlyOne per unit"]
+  B --> C["Pasang constraint<br/>bentrok guru/kelas maks 1<br/>batas JP harian"]
+  C --> D["CP-SAT Solve<br/>propagasi + branch &amp; bound<br/>8 worker paralel"]
+  D -.->|"konflik dipelajari<br/>(clause learning)"| D
+  D --> E{"Status solver"}
+  E -- "OPTIMAL / FEASIBLE" --> F["Polish delta 1,5 detik<br/>maks 200 putaran<br/>soft diturunkan"]
+  E -- INFEASIBLE --> G["Terbukti mustahil<br/>tampilkan diagnosis"]
+  E -- "NOT_SOLVED / timeout" --> H["Belum terbukti<br/>coba timeout lebih lama"]
+  F --> I["Evaluasi penuh<br/>pasti hard = 0"]
+  classDef ok fill:#dcfce7,stroke:#22c55e,color:#14532d;
+  classDef bad fill:#fee2e2,stroke:#ef4444,color:#7f1d1d;
+  classDef warn fill:#fef3c7,stroke:#f59e0b,color:#78350f;
+  class I ok;
+  class G bad;
+  class H warn;`;
+
+const FLOW_GA = `flowchart LR
+  A["Populasi awal: 16 individu<br/>tiap individu = jadwal acak"] --> B["improveFast 40 putaran<br/>perbaikan lokal delta"]
+  B --> C["Urutkan skor populasi<br/>10.000 x hard + soft"]
+  C --> D["Elit 5 dipertahankan<br/>6 terbaik jadi orang tua"]
+  D --> E["Buat 10 anak<br/>crossover 1 titik<br/>mutasi maks 3 posisi (40%)"]
+  E --> F["improveFast 25 putaran<br/>tiap anak (memetic)"]
+  F --> G["Gabung elit + anak<br/>potong jadi 16 terbaik"]
+  G --> H{"Skor terbaik = 0<br/>atau timeout?"}
+  H -- "Belum, lanjut" --> C
+  H -- Selesai --> I["Ambil individu terbaik<br/>lalu evaluasi penuh"]
+  classDef ok fill:#e0f2fe,stroke:#0ea5e9,color:#0c4a6e;
+  class I ok;`;
+
+const FLOW_TABU = `flowchart LR
+  A["Jadwal awal acak<br/>improveFast 40 putaran"] --> B["Sampel 48 gerakan<br/>unit acak ke slot<br/>kandidat acak"]
+  B --> C["Nilai delta tiap gerakan<br/>tanpa hitung ulang penuh"]
+  C --> D["Pilih delta terbaik<br/>yang tidak tabu"]
+  D --> E["Terapkan gerakan<br/>catat tabu 12 iterasi"]
+  E --> F["Perbarui best-ever<br/>rekor disimpan terpisah"]
+  F --> G{"Best = 0 atau<br/>timeout?"}
+  G -- "Belum, lanjut" --> B
+  G -- Selesai --> H["Polish best-ever<br/>improveFast maks<br/>120 putaran"]
+  H --> I["Evaluasi penuh"]
+  D -.->|"tabu boleh bila<br/>mengalahkan rekor (aspirasi)"| F
+  classDef ok fill:#fef3c7,stroke:#f59e0b,color:#78350f;
+  class I ok;`;
 
 function SectionTitle({ id, children, desc }: { id: string; children: React.ReactNode; desc?: string }) {
   return (
@@ -62,6 +121,7 @@ export default function KnowledgePage() {
             <li><a href="#batasan-keras">Batasan keras</a></li>
             <li><a href="#batasan-halus">Batasan halus & skor</a></li>
             <li><a href="#alur">Alur solver</a></li>
+            <li><a href="#flowchart">Flowchart & iterasi model</a></li>
             <li><a href="#cp">Model CP</a></li>
             <li><a href="#ga">Model GA Memetic</a></li>
             <li><a href="#tabu">Model Tabu Search</a></li>
@@ -104,7 +164,7 @@ export default function KnowledgePage() {
             </div></div>
             <div className="card bg-base-100 shadow"><div className="card-body p-4">
               <div className="text-3xl">🧬</div><h3 className="font-bold">GA Memetic — evolusi + perbaikan lokal</h3>
-              <p className="text-sm text-base-content/70">Membuat banyak calon jadwal, memilih yang terbaik, mengawinkan sebagian penempatannya, memutasi sebagian kecil, lalu memperbaiki tiap anak dengan pencarian lokal.</p>
+              <p className="text-sm text-base-content/70">Membuat banyak calon jadwal, memilih yang terbaik, mengawinkan sebagian penempatannya, memutasi sebagian kecil, lalu memperbaiki tiap anak dengan pencarian lokal berbasis delta (hanya bagian yang berubah yang dinilai).</p>
               <div className="mt-2 flex gap-1"><span className="badge badge-info badge-outline">Eksplorasi luas</span><span className="badge badge-outline">Acak</span></div>
             </div></div>
             <div className="card bg-base-100 shadow"><div className="card-body p-4">
@@ -201,9 +261,67 @@ export default function KnowledgePage() {
           </div>
         </div></section>
 
+
+        {/* FLOWCHART & ITERASI */}
+        <section className="card bg-base-100 shadow"><div className="card-body space-y-5 p-4 sm:p-6">
+          <SectionTitle id="flowchart" desc="Flowchart berikut menggambar persis alur di kode aplikasi (lib/solver.ts, lib/cpsat.ts, solver/cpsat_solver.py). Panah putus-putus = jalur kembali (iterasi/loop). Di bawahnya ada tabel: satu iterasi itu sebenarnya ngapain, apa saja yang dilihat/dihitung, dan parameter apa yang mengendalikannya.">4A. Flowchart & proses iterasi tiap model</SectionTitle>
+
+          <h3 className="font-bold">A. Alur besar — berlaku untuk semua model</h3>
+          <MermaidDiagram title="Alur besar penjadwalan" chart={FLOW_MAIN} />
+          <p className="text-sm leading-relaxed">Kuncinya ada di kotak <b>Evaluasi penuh</b>: apa pun jalan yang ditempuh model, calon jadwal selalu dinilai ulang dengan evaluator yang sama (<code>evaluate()</code>) sebelum disimpan/diterapkan. Jadi angka hard/soft antar-model selalu sebanding.</p>
+
+          <h3 className="font-bold">B. CP-SAT (OR-Tools) — bukan iterasi coba-coba, melainkan pembuktian</h3>
+          <MermaidDiagram title="CP-SAT (OR-Tools)" chart={FLOW_CPSAT} />
+          <div className="overflow-x-auto rounded-box border border-base-300">
+            <table className="table table-sm w-full min-w-[760px]">
+              <thead><tr><th>Tahap / “iterasi”</th><th>Apa yang dilihat / dihitung</th><th>Parameter pengendali</th></tr></thead>
+              <tbody>
+                <tr><td className="font-semibold">Pra-cek</td><td>Total JP tiap guru & kelas vs total slot seminggu; JP penugasan vs batas harian × hari; unit yang domainnya kosong setelah ketidaktersediaan disaring</td><td>Data Master, Ketersediaan, hari aktif</td></tr>
+                <tr><td className="font-semibold">Pemodelan</td><td>Satu variabel boolean per (unit × slot kandidat); ExactlyOne memastikan tiap unit tepat dapat 1 slot; blok 2JP otomatis menguasai JP pasangannya</td><td>Pola blok 2JP (unit & domain), JP/minggu</td></tr>
+                <tr><td className="font-semibold">Propagasi (tiap node pencarian)</td><td>Constraint bentrok (≤1 guru/kelas per slot terisi) dan batas JP harian mempersempit domain variabel lain; konflik dicatat sebagai clause baru</td><td>Maks JP/Hari guru & penugasan, ketidaktersediaan (domain awal)</td></tr>
+                <tr><td className="font-semibold">Branching</td><td>CP-SAT memilih variabel & nilai berikutnya secara internal (heuristik OR-Tools), 8 worker mencoba strategi berbeda paralel</td><td><code>num_search_workers = 8</code> (tetap di kode)</td></tr>
+                <tr><td className="font-semibold">Berhenti</td><td>Solusi layak pertama ditemukan (mode feasibility — tanpa objektif soft), ATAU seluruh ruang terbukti mustahil, ATAU waktu habis</td><td>Timeout run 2–60 detik (<code>max_time_in_seconds</code>)</td></tr>
+                <tr><td className="font-semibold">Polish</td><td>Local search delta maksimal 200 putaran selama 1,5 detik: hanya soft diturunkan dari solusi CP-SAT</td><td>Bobot w_gap/w_sore/w_sebar (penilaian soft)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="font-bold">C. GA Memetic — satu iterasi = satu generasi</h3>
+          <MermaidDiagram title="GA Memetic — per generasi" chart={FLOW_GA} />
+          <div className="overflow-x-auto rounded-box border border-base-300">
+            <table className="table table-sm w-full min-w-[760px]">
+              <thead><tr><th>Dalam satu generasi dilihat…</th><th>Detail di kode</th><th>Parameter</th></tr></thead>
+              <tbody>
+                <tr><td className="font-semibold">Skor tiap individu</td><td>Evaluasi penuh (<code>evaluate()</code>) untuk mengurutkan populasi: hard dulu, baru soft</td><td>Bobot w_gap/w_sore/w_sebar</td></tr>
+                <tr><td className="font-semibold">Delta local search</td><td><code>improveFast()</code> hanya menghitung ulang bagian yang berubah (slot lama/baru, hari guru & penugasan yang tersentuh) — bukan seluruh jadwal</td><td>Putaran awal 40, anak 25 (tetap di kode)</td></tr>
+                <tr><td className="font-semibold">Titik potong crossover</td><td>Satu titik acak: unit sebelum titik dari orang tua A, sesudahnya dari B</td><td>Acak (Math.random)</td></tr>
+                <tr><td className="font-semibold">Mutasi</td><td>Maksimal 3 posisi per anak, peluang 40% per posisi, nilai baru selalu dari domain sah unit itu</td><td>40% & ≤3 posisi (tetap di kode)</td></tr>
+                <tr><td className="font-semibold">Berhenti</td><td>Skor individu terbaik mencapai 0, atau waktu habis</td><td>Timeout run 2–60 detik</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="font-bold">D. Tabu Search — satu iterasi = satu langkah pindah</h3>
+          <MermaidDiagram title="Tabu Search — per iterasi" chart={FLOW_TABU} />
+          <div className="overflow-x-auto rounded-box border border-base-300">
+            <table className="table table-sm w-full min-w-[760px]">
+              <thead><tr><th>Dalam satu iterasi dilihat…</th><th>Detail di kode</th><th>Parameter</th></tr></thead>
+              <tbody>
+                <tr><td className="font-semibold">48 calon gerakan</td><td>Tiap calon: satu unit acak dipindah ke satu slot kandidat acak dari domainnya (blok 2JP hanya ke awal blok sah)</td><td>48 calon/iterasi (tetap di kode)</td></tr>
+                <tr><td className="font-semibold">Delta skor calon</td><td><code>trialMove()</code>: selisih (Δhard, Δsoft) dari ruang lingkup yang disentuh saja, lalu percobaan di-rollback</td><td>Bobot w_gap/w_sore/w_sebar, bobot hard 10.000</td></tr>
+                <tr><td className="font-semibold">Status tabu</td><td>Kunci <code>unit:slot</code> yang baru dipakai dilarang sampai 12 iterasi ke depan</td><td>Tabu tenure 12 (tetap di kode)</td></tr>
+                <tr><td className="font-semibold">Aspirasi</td><td>Gerakan tabu tetap dipilih bila skor barunya mengalahkan rekor terbaik global</td><td>Rekor best-ever selama run</td></tr>
+                <tr><td className="font-semibold">Berhenti & polish</td><td>Loop berhenti saat best = 0 atau timeout; best-ever lalu dipoles maksimal 120 putaran</td><td>Timeout run 2–60 detik</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="alert alert-info text-sm"><span><b>Cara membaca “iterasi” di hasil run:</b> aplikasi menyimpan <b>hard, soft, dan detik</b> tiap run (bukan jumlah iterasi), karena yang penting bagi pengguna adalah kualitas akhir per waktu. Sebagai gambaran: GA menyelesaikan ±10 anak per generasi, Tabu ±48 penilaian gerakan per iterasi — pada data besar keduanya bisa mencapai ribuan iterasi sebelum timeout, sedangkan CP-SAT menghabiskan waktunya di propagasi constraint, bukan di generasi/langkah seperti keduanya.</span></div>
+        </div></section>
+
         {/* CP */}
         <section className="card border-t-4 border-success bg-base-100 shadow"><div className="card-body space-y-4 p-4 sm:p-6">
-          <SectionTitle id="cp" desc="CP adalah singkatan dari Constraint Programming. Implementasi di aplikasi ini memakai backtracking dengan pemilihan unit prioritas dan penyaringan kandidat pada setiap langkah. Ini bukan OR-Tools CP-SAT; jaminan yang diberikan adalah: bila pencarian CP selesai dan mengembalikan solusi, solusi itu sudah melewati seluruh batasan keras model.">5. Model CP — mencari secara sistematis sampai terbukti dapat/tidak dapat</SectionTitle>
+          <SectionTitle id="cp" desc="CP adalah singkatan dari Constraint Programming. Implementasi utama aplikasi ini memakai library OR-Tools CP-SAT (Google) lewat proses Python (solver/cpsat_solver.py): seluruh batasan keras dimodelkan sebagai constraint matematis. Hasil FEASIBLE/OPTIMAL pasti 0 hard violation; status INFEASIBLE berarti terbukti tidak ada jadwal yang memenuhi semua batasan keras sekaligus. CP-SAT di aplikasi ini mencari jadwal layak terlebih dahulu (bukan membuktikan soft optimum), lalu hasilnya dipoles local search delta untuk soft-nya. Syarat: Python 3 terpasang dan library terpasang dengan pip install ortools (atau pip install -r requirements.txt).">5. Model CP — mencari secara sistematis sampai terbukti dapat/tidak dapat</SectionTitle>
           <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
             <div className="rounded-box bg-base-200 p-4">
               <h3 className="font-bold">Analogi sederhana</h3>
@@ -214,7 +332,7 @@ export default function KnowledgePage() {
                 <li>Urutkan unit 2JP lebih dulu karena paling sulit ditempatkan, lalu unit dengan kandidat tersedikit (prinsip MRV: yang paling sempit dulu).</li>
                 <li>Pilih unit berikutnya, saring slot yang saat itu masih sah terhadap bentrok, ketidaktersediaan, dan batas harian.</li>
                 <li>Tempatkan unit. Untuk 2JP, kedua JP langsung ditandai terisi.</li>
-                <li>Bila buntu, batalkan penempatan terakhir dan coba kandidat lain (backtracking).</li>
+                <li>CP-SAT memangkas ruang cari dengan propagasi constraint dan pencarian paralel (8 worker); aplikasi juga menjalankan pra-cek cepat (total JP guru/kelas melebihi JP seminggu, unit tanpa slot sah, total penugasan melebihi batas harian x hari) dan menampilkannya sebagai diagnosis.</li>
                 <li>Berhenti saat semua unit terpasang atau waktu habis.</li>
               </ol>
             </div>
@@ -241,14 +359,14 @@ export default function KnowledgePage() {
               <p className="mt-2 text-sm leading-relaxed">GA memelihara sekumpulan “individu”, dan satu individu adalah satu rancangan jadwal lengkap. Individu berskor baik dipilih sebagai orang tua. Anaknya mewarisi bagian awal jadwal dari satu orang tua dan sisanya dari orang tua lain, sedikit gennya diubah acak, lalu anak itu “dilatih” lagi melalui perbaikan lokal.</p>
               <h3 className="mt-4 font-bold">Langkah kerja</h3>
               <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">
-                <li>Bentuk 24 individu awal secara acak dalam domain yang sah untuk tipe unitnya.</li>
-                <li>Perbaiki setiap individu dengan local search (maksimal 400 putaran pemindaian).</li>
+                <li>Bentuk 16 individu awal secara acak dalam domain yang sah untuk tipe unitnya.</li>
+                <li>Perbaiki setiap individu dengan local search delta (maksimal 40 putaran, dibatasi waktu).</li>
                 <li>Urutkan berdasarkan skor gabungan; skor lebih kecil lebih baik.</li>
-                <li>Ambil 8 terbaik sebagai kelompok orang tua dan pertahankan 6 terbaik (elit).</li>
-                <li>Buat 16 anak dengan crossover satu titik dari dua orang tua.</li>
+                <li>Ambil 6 terbaik sebagai kelompok orang tua dan pertahankan 5 terbaik (elit).</li>
+                <li>Buat 10 anak per generasi dengan crossover satu titik dari dua orang tua.</li>
                 <li>Mutasi maksimal 3 posisi pada sebagian anak, selalu ke slot yang termasuk domain unit tersebut.</li>
-                <li>Jalankan local search maksimal 60 putaran pada setiap anak.</li>
-                <li>Gabungkan elit + anak, pilih 24 terbaik, ulangi sampai skor terbaik 0 atau timeout.</li>
+                <li>Jalankan local search delta maksimal 25 putaran pada setiap anak.</li>
+                <li>Gabungkan elit + anak, pilih 16 terbaik, ulangi sampai skor terbaik 0 atau timeout.</li>
               </ol>
             </div>
             <div className="space-y-3">
@@ -258,12 +376,12 @@ export default function KnowledgePage() {
             </div>
           </div>
           <ParamTable rows={[
-            ["Ukuran populasi", "24 individu (tetap di kode)", "Jumlah rancangan jadwal yang dipelihara setiap generasi", "Lebih besar = lebih beragam tetapi lebih lambat per generasi"],
-            ["Orang tua & elit", "8 orang tua teratas; 6 elit dipertahankan", "Menyeimbangkan kualitas dan keberagaman", "Elit terlalu dominan dapat mengurangi variasi"],
-            ["Jumlah anak", "16 per generasi", "Keturunan baru menggantikan sebagian populasi", "Lebih banyak anak = eksplorasi lebih luas per generasi"],
+            ["Ukuran populasi", "16 individu (tetap di kode)", "Jumlah rancangan jadwal yang dipelihara setiap generasi", "Lebih besar = lebih beragam tetapi lebih lambat per generasi"],
+            ["Orang tua & elit", "6 orang tua teratas; 5 elit dipertahankan", "Menyeimbangkan kualitas dan keberagaman", "Elit terlalu dominan dapat mengurangi variasi"],
+            ["Jumlah anak", "10 per generasi", "Keturunan baru menggantikan sebagian populasi", "Lebih banyak anak = eksplorasi lebih luas per generasi"],
             ["Crossover", "Satu titik potong acak", "Anak mengambil urutan unit dari dua orang tua", "Menggabungkan pola awal dan akhir dari dua jadwal"],
             ["Mutasi", "Hingga 3 posisi; peluang per posisi 40% pada proses mutasi anak", "Mengubah slot satu unit ke kandidat sahnya", "Membantu keluar dari pola yang stagnan; terlalu agresif dapat merusak pola baik"],
-            ["Local search awal / anak", "Maksimal 400 / 60 putaran", "Memindai pemindahan unit yang menurunkan skor", "Inilah bagian “memetic”-nya; mempercepat validitas tetapi menambah waktu"],
+            ["Local search awal / anak", "Maksimal 40 / 25 putaran (delta)", "Memindai pemindahan unit yang menurunkan skor", "Inilah bagian “memetic”-nya; mempercepat validitas tetapi menambah waktu"],
             ["Timeout", "Diatur per run, 2–60 detik", "Batas total evolusi", "Lebih lama memberi lebih banyak generasi"],
           ]} />
         </div></section>
@@ -278,12 +396,12 @@ export default function KnowledgePage() {
               <h3 className="mt-4 font-bold">Langkah kerja</h3>
               <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">
                 <li>Mulai dari satu jadwal acak yang sudah diperbaiki local search.</li>
-                <li>Setiap iterasi, bangkitkan 60 calon gerakan untuk dinilai.</li>
-                <li>Sekitar 60% gerakan memindahkan satu unit ke slot kandidat lain; sisanya mencoba menukar dua unit bila domain keduanya mengizinkan.</li>
+                <li>Setiap iterasi, bangkitkan 48 calon gerakan untuk dinilai dengan penilaian delta.</li>
+                <li>Ke-48 calon itu masing-masing berupa satu gerakan: pilih satu unit secara acak, lalu pilih satu slot kandidat acak dari domain unit tersebut (pindah satu unit).</li>
                 <li>Pilih calon berskor terendah yang tidak tabu, atau yang memecahkan rekor terbaik global.</li>
                 <li>Tandai gerakan terpilih sebagai tabu selama 12 iterasi.</li>
                 <li>Simpan jadwal terbaik yang pernah ditemui, bukan hanya posisi terakhir.</li>
-                <li>Di akhir, jadwal terbaik dipoles lagi dengan local search maksimal 300 putaran.</li>
+                <li>Di akhir, jadwal terbaik dipoles lagi dengan local search delta maksimal 120 putaran.</li>
               </ol>
             </div>
             <div className="space-y-3">
@@ -293,11 +411,11 @@ export default function KnowledgePage() {
             </div>
           </div>
           <ParamTable rows={[
-            ["Calon per iterasi", "60 gerakan (tetap di kode)", "Berapa pemindahan/tukar yang dibandingkan sebelum memilih satu langkah", "Lebih banyak = langkah lebih teliti tetapi iterasi lebih lambat"],
-            ["Jenis gerakan", "60% pindah satu unit, 40% percobaan tukar", "Menyeimbangkan perubahan kecil dan pertukaran posisi", "Tukar hanya terjadi bila kedua slot tetap berada dalam domain masing-masing"],
+            ["Calon per iterasi", "48 gerakan (tetap di kode)", "Berapa pemindahan/tukar yang dibandingkan sebelum memilih satu langkah", "Lebih banyak = langkah lebih teliti tetapi iterasi lebih lambat"],
+            ["Jenis gerakan", "Pindah satu unit ke slot kandidat acaknya", "Satu-satunya jenis gerakan Tabu saat ini; tidak ada gerakan tukar dua unit", "Gerakan selalu berada dalam domain unit (blok 2JP hanya ke awal blok yang sah)"],
             ["Tabu tenure", "12 iterasi", "Berapa lama gerakan unit→slot dilarang diulang", "Terlalu singkat mudah berputar; terlalu lama dapat menutup jalan baik"],
             ["Aspirasi", "Gerakan tabu boleh dipilih bila mengalahkan rekor global", "Pengecualian agar larangan tidak mengorbankan solusi terbaik", "Membantu ketika tabu list terlalu ketat"],
-            ["Polishing akhir", "Local search maksimal 300 putaran", "Memindai pemindahan yang masih menurunkan skor", "Membersihkan pelanggaran/soft yang tersisa pada best-ever"],
+            ["Polishing akhir", "Local search delta maksimal 120 putaran", "Memindai pemindahan yang masih menurunkan skor", "Membersihkan pelanggaran/soft yang tersisa pada best-ever"],
             ["Timeout", "Diatur per run, 2–60 detik", "Batas jumlah iterasi secara tidak langsung", "Lebih lama memberi lebih banyak sampel gerakan"],
           ]} />
         </div></section>
@@ -320,7 +438,7 @@ export default function KnowledgePage() {
                 <tr><td className="font-semibold">w_gap, w_sore, w_sebar</td><td>Menu Aturan</td><td>Dinilai di hasil</td><td>✓</td><td>✓</td><td>CP mencari layak dulu; GA/Tabu memakai bobot selama pencarian</td></tr>
                 <tr><td className="font-semibold">Timeout per model</td><td>Halaman Solver</td><td>✓</td><td>✓</td><td>✓</td><td>Dibatasi 2–60 detik oleh API</td></tr>
                 <tr><td className="font-semibold">Populasi, mutasi, elit</td><td>Tetap di kode</td><td>—</td><td>✓</td><td>—</td><td>Belum dibuka sebagai pengaturan UI</td></tr>
-                <tr><td className="font-semibold">Tabu tenure & sampel</td><td>Tetap di kode</td><td>—</td><td>—</td><td>✓</td><td>12 iterasi dan 60 calon/iterasi</td></tr>
+                <tr><td className="font-semibold">Tabu tenure & sampel</td><td>Tetap di kode</td><td>—</td><td>—</td><td>✓</td><td>12 iterasi dan 48 calon/iterasi</td></tr>
               </tbody>
             </table>
           </div>

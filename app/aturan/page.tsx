@@ -17,6 +17,9 @@ export default function AturanPage() {
     <div className="card bg-base-100 shadow p-3 sm:p-4 lg:p-5 space-y-4">
       <div><h1 className="font-bold text-lg">⚙️ Aturan Penjadwalan</h1><p className="text-sm text-slate-500">Khusus Superadmin. Dipakai papan, validasi drag & drop, dan ketiga solver secara bersama.</p></div>
       {msg && <div className="text-sm bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">{msg}</div>}
+      <div><h3 className="font-semibold text-sm mb-1">🏫 Nama Sekolah</h3>
+        <input className="border rounded px-2 py-1.5 w-full text-sm" value={st.school_name || ""} onChange={e => setSt({ ...st, school_name: e.target.value })} placeholder="cth: SMP DAARUL KHOLIDIN" />
+        <p className="text-xs text-slate-400 mt-1">Ditampilkan pada judul Export Jadwal Excel: “JADWAL MATA PELAJARAN {st.school_name ? String(st.school_name).toUpperCase() : "…"}”. Kosongkan bila tidak ingin memakai nama sekolah.</p></div>
       <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
         <label className="flex items-start gap-2 text-sm cursor-pointer">
           <input type="checkbox" className="mt-0.5" checked={st.pola_blok !== "0"} onChange={e => setSt({ ...st, pola_blok: e.target.checked ? "1" : "0" })} />

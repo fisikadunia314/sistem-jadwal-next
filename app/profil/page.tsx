@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import TeacherColorPicker from "@/components/TeacherColorPicker";
 
 export default function ProfilPage() {
   const [p, setP] = useState<any>(null);
@@ -9,10 +10,11 @@ export default function ProfilPage() {
   const [users, setUsers] = useState<any[]>([]); const [teachers, setTeachers] = useState<any[]>([]);
   const [uf, setUf] = useState<any>({ username: "", display_name: "", password: "", role: "pegawai", teacher_id: "" });
   const [editId, setEditId] = useState<number | null>(null);
+  const [teacherColor, setTeacherColor] = useState("#2563EB");
 
   async function load() {
     const r = await fetch("/api/profile").then(x => x.json());
-    if (r.ok) { setP(r.profile); setForm({ display_name: r.profile.display_name, username: r.profile.username }); }
+    if (r.ok) { setP(r.profile); setForm({ display_name: r.profile.display_name, username: r.profile.username }); setTeacherColor(r.profile.teacher?.color_hex || "#2563EB"); }
     else setMsg("⚠️ " + r.error);
     const u = await fetch("/api/users").then(x => x.json()).catch(() => null);
     if (u?.ok) { setUsers(u.rows); setTeachers(u.teachers); }
@@ -23,6 +25,12 @@ export default function ProfilPage() {
     const r = await fetch("/api/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) }).then(x => x.json());
     setMsg(r.ok ? "✅ " + r.message + " Memuat ulang halaman…" : "⚠️ " + r.error);
     if (r.ok) setTimeout(() => location.reload(), 700);
+  }
+  const textOn = (hex: string) => { const v = /^#[0-9a-fA-F]{6}$/.test(hex || "") ? hex : "#64748B"; const n = parseInt(v.slice(1), 16); const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255; return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.62 ? "#111827" : "#FFFFFF"; };
+  async function saveTeacherColor(random = false) {
+    const r = await fetch("/api/profile/color", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(random ? { random: true } : { color_hex: teacherColor }) }).then(x => x.json());
+    if (r.ok) { setTeacherColor(r.color_hex); setP((prev: any) => prev ? { ...prev, teacher: { ...prev.teacher, color_hex: r.color_hex } } : prev); }
+    setMsg(r.ok ? "✅ " + r.message : "⚠️ " + r.error);
   }
   async function savePassword() {
     const r = await fetch("/api/profile/password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(pw) }).then(x => x.json());
@@ -69,6 +77,18 @@ export default function ProfilPage() {
           <div className="rounded-box bg-base-200 p-3"><span className="text-base-content/60">Maks JP/Minggu*</span><br/><b>{p.teacher.max_jp_week || "Tidak dibatasi"}</b></div>
         </div>}
         {p.teacher && <p className="mt-2 text-xs text-base-content/50">*Maks JP/Minggu saat ini baru tersimpan sebagai data profil guru; batas yang ditegakkan solver adalah Maks JP/Hari. Lihat Knowledge Base untuk status batasan yang aktif.</p>}
+        {p.teacher && <div className="mt-4 rounded-box border border-base-300 bg-base-100 p-3">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="min-w-48 flex-1">
+              <div className="font-bold">🎨 Warna Saya di Papan Jadwal</div>
+              <p className="text-xs text-base-content/60">Tersimpan di data guru dalam format HEX. Tidak boleh sama/terlalu mirip dengan guru lain; warna teks di papan dihitung otomatis agar berlawanan dan terbaca.</p>
+            </div>
+            <TeacherColorPicker value={teacherColor} excludeId={p.teacher.id} label={`${p.teacher.code} — ${p.teacher.name}`} onChange={setTeacherColor} />
+            <span className="rounded-lg px-3 py-2 text-sm font-bold" style={{ background: teacherColor, color: textOn(teacherColor) }}>{p.teacher.code} • Contoh Kartu</span>
+            <button className="btn btn-outline btn-sm" onClick={() => saveTeacherColor(true)}>🎲 Acak Unik</button>
+            <button className="btn btn-primary btn-sm" onClick={() => saveTeacherColor(false)}>Simpan Warna</button>
+          </div>
+        </div>}
         {!p.teacher && !isAdmin && <div className="alert alert-warning mt-4 text-sm"><span>Akun Anda belum dikaitkan ke data guru oleh Superadmin. Setelah dikaitkan, jadwal dan ketidaktersediaan pribadi Anda akan muncul penuh.</span></div>}
       </div></section>
 

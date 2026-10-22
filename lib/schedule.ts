@@ -40,6 +40,10 @@ export function validate(entries: Entry[]): string[] {
   }
   return [...new Set(viol)];
 }
+// Pasangan blok 2JP sebuah kartu (penugasan sama, kelas sama, hari sama, JP berurutan sejajar blok).
+export function blockMate(entry: Entry, entries: Entry[]): Entry | undefined {
+  return entries.find(x => x.id !== entry.id && x.assignment_id === entry.assignment_id && x.class_id === entry.class_id && x.day === entry.day && Math.abs(x.period - entry.period) === 1 && Math.min(x.period, entry.period) % 2 === 1);
+}
 export function moveOptions(entry: Entry, entries: Entry[], pair?: Entry | null) {
   // Mode BLOK 2JP: dua kartu JP berurutan milik penugasan yang sama digeser bersama
   // ke satu blok target (JP ganjil+genapnya). Status blok ditulis ke kedua JP.
@@ -74,6 +78,7 @@ export function moveOptions(entry: Entry, entries: Entry[], pair?: Entry | null)
   const swaps: number[] = [];
   for (const o of entries) {
     if (o.id === entry.id || (o.day === entry.day && o.period === entry.period)) continue;
+    if (blockMate(o, entries)) continue; // blok 2JP sudah tetap: tidak ditawarkan sebagai pasangan tukar
     const trial = entries.map(x => x.id === entry.id ? { ...x, day: o.day, period: o.period } : x.id === o.id ? { ...x, day: entry.day, period: entry.period } : x);
     if (!validate(trial).length) swaps.push(o.id);
   }

@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 function profilePayload(u: any) {
   const teacher = u.teacher_id
-    ? db.prepare("SELECT id,code,name,max_jp_day,max_jp_week FROM teachers WHERE id=?").get(u.teacher_id)
+    ? db.prepare("SELECT id,code,name,max_jp_day,max_jp_week,color_hex FROM teachers WHERE id=?").get(u.teacher_id)
     : null;
   const stats = u.teacher_id ? {
     assignments: Number((db.prepare("SELECT COUNT(*) c FROM assignments WHERE teacher_id=?").get(u.teacher_id) as any).c),

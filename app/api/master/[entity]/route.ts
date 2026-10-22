@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import db from "@/lib/db";
+import { randomTeacherColor, validateTeacherColor } from "@/lib/teacher-colors";
 export const dynamic = "force-dynamic";
-export const ENTITIES: Record<string, { table: string; cols: string[] }> = {
-  teachers: { table: "teachers", cols: ["code", "name", "max_jp_day", "max_jp_week"] },
-  subjects: { table: "subjects", cols: ["code", "name", "prefer_pagi"] },
-  classes: { table: "classes", cols: ["name"] },
-  assignments: { table: "assignments", cols: ["teacher_id", "subject_id", "class_id", "jp_week", "max_jp_day"] },
-};
+import { ENTITIES } from "../entities";
 export async function GET(_: NextRequest, ctx: { params: Promise<{ entity: string }> }) {
   const u = await currentUser(); if (!u) return NextResponse.json({ ok: false, error: "Login dulu." }, { status: 401 });
   const { entity } = await ctx.params; const cfg = ENTITIES[entity];
@@ -27,6 +23,10 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ entity: st
   const { entity } = await ctx.params; const cfg = ENTITIES[entity];
   if (!cfg) return NextResponse.json({ ok: false, error: "Entitas tidak dikenal." }, { status: 404 });
   const b = await req.json();
+  if (entity === "teachers") {
+    if (b.color_hex) { const v = validateTeacherColor(b.color_hex); if (!v.ok) return NextResponse.json({ ok: false, error: v.error }, { status: 409 }); b.color_hex = v.color; }
+    else b.color_hex = randomTeacherColor();
+  }
   const vals = cfg.cols.map(c => b[c] === "" || b[c] === undefined ? null : b[c]);
   try {
     const info: any = db.prepare(`INSERT INTO ${cfg.table}(${cfg.cols.join(",")}) VALUES(${cfg.cols.map(() => "?").join(",")})`).run(...vals);

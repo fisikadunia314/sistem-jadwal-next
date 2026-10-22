@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import db, { tx } from "@/lib/db";
-import { allEntries, validate } from "@/lib/schedule";
+import { allEntries, blockMate, validate } from "@/lib/schedule";
 export async function POST(req: NextRequest) {
   const u = await currentUser();
   if (!u) return NextResponse.json({ ok: false, error: "Sesi berakhir, login ulang." }, { status: 401 });
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
   } else if (body.mode === "tukar") {
     other = trial.find(x => x.id === Number(body.otherId));
     if (!other) return NextResponse.json({ ok: false, error: "Pasangan tukar tidak ditemukan." }, { status: 404 });
+    if (blockMate(e, entries) || blockMate(other, entries)) return NextResponse.json({ ok: false, error: "Kartu blok 2JP sudah tetap dan tidak bisa ditukar/dipecah oleh kartu 1JP." }, { status: 409 });
     [tgt.day, tgt.period, other.day, other.period] = [other.day, other.period, tgt.day, tgt.period];
     label = `tukar dengan ${other.sname} (${other.cname})`;
   } else return NextResponse.json({ ok: false, error: "Mode tidak dikenal." }, { status: 400 });

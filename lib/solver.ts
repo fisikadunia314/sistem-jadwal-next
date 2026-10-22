@@ -114,66 +114,146 @@ export function solveCP(P: P, deadline: number): number[] | null {
   return bt(0) ? assign : null;
 }
 
-// ---------- heuristik bersama (GA & Tabu) ----------
-const randCand = (P: P, i: number) => P.unitSlots[i][Math.floor(Math.random() * P.unitSlots[i].length)];
-function greedy(P: P): number[] {
-  const a = P.units.map((_, i) => randCand(P, i));
-  return improve(a, P, 400);
+// ---------- Mesin DELTA (optimasi kecepatan) ----------
+// Cara lama: setiap calon langkah dinilai dengan evaluate() PENUH (membangun ulang Map/Set string
+// untuk seluruh jadwal) -> sangat lambat. Mesin ini memelihara cacah (count) guru/kelas/hari dalam
+// array angka; menilai satu langkah hanya menghitung bagian yang berubah (slot lama/baru, hari guru,
+// hari penugasan). Hasil akhirnya tetap diverifikasi evaluate() penuh sebelum diterapkan.
+type Enc = { tIdx: Map<number, number>; cIdx: Map<number, number>; aIdx: Map<number, number>; dIdx: Map<string, number>; nT: number; nC: number; nA: number; nD: number; nS: number };
+const encCache = new WeakMap<object, Enc>();
+function enc(P: P): Enc {
+  let e = encCache.get(P); if (e) return e;
+  const uniq = <T,>(xs: T[]): T[] => [...new Set(xs)];
+  const T = uniq(P.units.map(u => u.teacher_id)), C = uniq(P.units.map(u => u.class_id)), A = uniq(P.units.map(u => u.assignment_id)), D = uniq(P.slots.map(s => s.day));
+  e = { tIdx: new Map(T.map((v, i) => [v, i])), cIdx: new Map(C.map((v, i) => [v, i])), aIdx: new Map(A.map((v, i) => [v, i])), dIdx: new Map(D.map((v, i) => [v, i])), nT: T.length, nC: C.length, nA: A.length, nD: D.length, nS: P.slots.length };
+  encCache.set(P, e); return e;
 }
-function improve(a: number[], P: P, rounds: number): number[] {
-  let best = [...a], bs = score(best, P);
-  for (let r = 0; r < rounds && bs > 0; r++) {
+const occOfIdx = (P: P, i: number, s: number): number[] => P.units[i].size === 2 ? [s, P.pairOf.get(s) ?? s] : [s];
+type State = { assign: number[]; hard: number; soft: number; tSlot: Int32Array; cSlot: Int32Array; tDay: Int32Array; aDay: Int32Array };
+function makeState(P: P, assign: number[]): State {
+  const E = enc(P), ev = evaluate(assign, P);
+  const st: State = { assign: [...assign], hard: ev.hard, soft: ev.soft, tSlot: new Int32Array(E.nT * E.nS), cSlot: new Int32Array(E.nC * E.nS), tDay: new Int32Array(E.nT * E.nD), aDay: new Int32Array(E.nA * E.nD) };
+  P.units.forEach((u, i) => {
+    const t = E.tIdx.get(u.teacher_id)!, c = E.cIdx.get(u.class_id)!, a = E.aIdx.get(u.assignment_id)!, d = E.dIdx.get(P.slots[assign[i]].day)!;
+    for (const oi of occOfIdx(P, i, assign[i])) { st.tSlot[t * E.nS + oi]++; st.cSlot[c * E.nS + oi]++; }
+    st.tDay[t * E.nD + d] += u.size; st.aDay[a * E.nD + d] += u.size;
+  });
+  return st;
+}
+function applyCounts(P: P, st: State, i: number, from: number, to: number) {
+  const E = enc(P), u = P.units[i], t = E.tIdx.get(u.teacher_id)!, c = E.cIdx.get(u.class_id)!, a = E.aIdx.get(u.assignment_id)!;
+  if (from >= 0) { const d = E.dIdx.get(P.slots[from].day)!; for (const oi of occOfIdx(P, i, from)) { st.tSlot[t * E.nS + oi]--; st.cSlot[c * E.nS + oi]--; } st.tDay[t * E.nD + d] -= u.size; st.aDay[a * E.nD + d] -= u.size; }
+  if (to >= 0) { const d = E.dIdx.get(P.slots[to].day)!; for (const oi of occOfIdx(P, i, to)) { st.tSlot[t * E.nS + oi]++; st.cSlot[c * E.nS + oi]++; } st.tDay[t * E.nD + d] += u.size; st.aDay[a * E.nD + d] += u.size; }
+  st.assign[i] = to;
+}
+// biaya lokal untuk ruang lingkup yang disentuh unit i (dipakai sebelum & sesudah mutasi percobaan)
+function scopeCost(P: P, st: State, i: number, days: Set<number>, slots: Set<number>): { hard: number; soft: number } {
+  const E = enc(P), u = P.units[i], t = E.tIdx.get(u.teacher_id)!, c = E.cIdx.get(u.class_id)!, a = E.aIdx.get(u.assignment_id)!;
+  let hard = 0, soft = 0;
+  for (const s of slots) { hard += Math.max(0, st.tSlot[t * E.nS + s] - 1) + Math.max(0, st.cSlot[c * E.nS + s] - 1); }
+  const cur = st.assign[i];
+  if (cur >= 0) for (const oi of occOfIdx(P, i, cur)) { const s = P.slots[oi]; if (P.unT.has(`${u.teacher_id}|${s.day}|${s.period}`) || P.unC.has(`${u.class_id}|${s.day}|${s.period}`)) hard++; if (u.prefer_pagi && s.period >= 7) soft += P.w.sore; }
+  const mxT = P.teachers.get(u.teacher_id)?.max_jp_day || 0, mxA = P.aMaxDay.get(u.assignment_id) || 0;
+  for (const d of days) {
+    if (mxT) hard += Math.max(0, st.tDay[t * E.nD + d] - mxT);
+    if (mxA) hard += Math.max(0, st.aDay[a * E.nD + d] - mxA);
+    // celah guru pada hari d (dihitung dari penempatan saat ini)
+    const ps = new Set<number>();
+    P.units.forEach((x, xi) => { if (x.teacher_id === u.teacher_id && st.assign[xi] >= 0 && E.dIdx.get(P.slots[st.assign[xi]].day) === d) for (const oi of occOfIdx(P, xi, st.assign[xi])) ps.add(P.slots[oi].period); });
+    const sorted = [...ps].sort((x, y) => x - y); let gap = 0; for (let k = 1; k < sorted.length; k++) gap += Math.max(0, sorted[k] - sorted[k - 1] - 1); soft += gap * P.w.gap;
+    soft += Math.max(0, st.aDay[a * E.nD + d] - 2) * P.w.sebar;
+  }
+  return { hard, soft };
+}
+// coba pindahkan unit i; kembalikan perubahan (hard,soft). State DITINGGALKAN berubah — panggil rollback bila tidak dipakai.
+function trialMove(P: P, st: State, i: number, target: number): { dh: number; ds: number; from: number } {
+  const E = enc(P), from = st.assign[i];
+  const days = new Set<number>([E.dIdx.get(P.slots[from].day)!, E.dIdx.get(P.slots[target].day)!]);
+  const slots = new Set<number>([...occOfIdx(P, i, from), ...occOfIdx(P, i, target)]);
+  const before = scopeCost(P, st, i, days, slots);
+  applyCounts(P, st, i, from, target);
+  const after = scopeCost(P, st, i, days, slots);
+  return { dh: after.hard - before.hard, ds: after.soft - before.soft, from };
+}
+function commitDelta(st: State, d: { dh: number; ds: number }) { st.hard += d.dh; st.soft += d.ds; }
+const stateScore = (st: State) => 10000 * st.hard + st.soft;
+
+function improveFast(P: P, start: number[], deadline: number, maxRounds: number): number[] {
+  const st = makeState(P, start);
+  for (let round = 0; round < maxRounds && stateScore(st) > 0; round++) {
     let improved = false;
-    for (let i = 0; i < a.length; i++) {
-      for (const s of P.unitSlots[i]) {
-        if (best[i] === s) continue;
-        const trial = [...best]; trial[i] = s; const sc = score(trial, P);
-        if (sc < bs) { best = trial; bs = sc; improved = true; }
+    for (let i = 0; i < P.units.length; i++) {
+      if ((i & 7) === 0 && Date.now() > deadline) return st.assign;
+      const cur = st.assign[i]; let bestS = cur, bestD: { dh: number; ds: number } | null = null, bestDelta = 0;
+      for (const cand of P.unitSlots[i]) {
+        if (cand === cur) continue;
+        const d = trialMove(P, st, i, cand);
+        const delta = 10000 * d.dh + d.ds;
+        applyCounts(P, st, i, cand, cur); // rollback percobaan
+        if (delta < bestDelta) { bestDelta = delta; bestS = cand; bestD = d; }
+      }
+      if (bestD && bestS !== cur) {
+        const d = trialMove(P, st, i, bestS); commitDelta(st, d); improved = true;
+        if (stateScore(st) <= 0) break;
       }
     }
     if (!improved) break;
   }
-  return best;
+  return st.assign;
 }
+const randCand = (P: P, i: number) => P.unitSlots[i][Math.floor(Math.random() * P.unitSlots[i].length)];
+function randomAssign(P: P): number[] { return P.units.map((_, i) => randCand(P, i)); }
+
+// ---------- GA Memetic (delta) ----------
 export function solveGA(P: P, deadline: number): number[] {
-  let pop = Array.from({ length: 24 }, () => greedy(P));
-  pop.sort((x, y) => score(x, P) - score(y, P));
-  while (Date.now() < deadline && score(pop[0], P) > 0) {
-    const parents = pop.slice(0, 8);
-    const kids: number[][] = [];
-    while (kids.length < 16) {
+  const POP = 16;
+  let pop = Array.from({ length: POP }, () => improveFast(P, randomAssign(P), Math.min(deadline, Date.now() + 1500), 40));
+  const sc = (a: number[]) => { const e = evaluate(a, P); return 10000 * e.hard + e.soft; };
+  pop.sort((x, y) => sc(x) - sc(y));
+  while (Date.now() < deadline && sc(pop[0]) > 0) {
+    const parents = pop.slice(0, 6); const kids: number[][] = [];
+    while (kids.length < 10 && Date.now() < deadline) {
       const p1 = parents[Math.floor(Math.random() * parents.length)], p2 = parents[Math.floor(Math.random() * parents.length)];
       const cut = Math.floor(Math.random() * P.units.length);
       const kid = p1.map((v, i) => (i < cut ? v : p2[i]));
       for (let k = 0; k < 3; k++) if (Math.random() < 0.4) { const j = Math.floor(Math.random() * kid.length); kid[j] = randCand(P, j); }
-      kids.push(improve(kid, P, 60)); // memetic: local search pada anak
+      kids.push(improveFast(P, kid, deadline, 25));
     }
-    pop = [...pop.slice(0, 6), ...kids].sort((x, y) => score(x, P) - score(y, P)).slice(0, 24);
+    pop = [...pop.slice(0, 5), ...kids].sort((x, y) => sc(x) - sc(y)).slice(0, POP);
   }
   return pop[0];
 }
+
+// ---------- Tabu Search (delta) ----------
 export function solveTabu(P: P, deadline: number): number[] {
-  let cur = greedy(P), cs = score(cur, P); let best = [...cur], bs = cs;
+  const st = makeState(P, improveFast(P, randomAssign(P), Math.min(deadline, Date.now() + 1500), 40));
+  let best = [...st.assign], bs = stateScore(st);
   const tabu = new Map<string, number>(); let iter = 0;
   while (Date.now() < deadline && bs > 0) {
-    iter++; let moveBest: number[] | null = null, ms = Infinity, mkey = "";
-    for (let t = 0; t < 60; t++) {
-      const i = Math.floor(Math.random() * cur.length);
-      const trial = [...cur];
-      if (Math.random() < 0.6) trial[i] = randCand(P, i);
-      else { const j = Math.floor(Math.random() * cur.length); // tukar hanya bila tetap di kandidat masing-masing unit
-        if (P.unitSlots[i].includes(trial[j]) && P.unitSlots[j].includes(trial[i])) [trial[i], trial[j]] = [trial[j], trial[i]]; else trial[i] = randCand(P, i); }
-      const sc = score(trial, P), key = `${i}:${trial[i]}`;
-      if ((tabu.get(key) || 0) > iter && sc >= bs) continue;
-      if (sc < ms) { ms = sc; moveBest = trial; mkey = key; }
+    iter++;
+    let chosen: { i: number; s: number; d: { dh: number; ds: number; from: number } } | null = null; let chosenDelta = Infinity;
+    for (let t = 0; t < 48; t++) {
+      const i = Math.floor(Math.random() * P.units.length); const target = randCand(P, i);
+      if (target === st.assign[i]) continue;
+      const d = trialMove(P, st, i, target); const delta = 10000 * d.dh + d.ds;
+      applyCounts(P, st, i, target, d.from);
+      const key = `${i}:${target}`, isTabu = (tabu.get(key) || 0) > iter;
+      const newScore = stateScore(st) + delta;
+      if (isTabu && newScore >= bs) continue;
+      if (delta < chosenDelta) { chosenDelta = delta; chosen = { i, s: target, d }; }
     }
-    if (!moveBest) break;
-    cur = moveBest; cs = ms; tabu.set(mkey, iter + 12);
-    if (cs < bs) { bs = cs; best = [...cur]; }
+    if (!chosen) break;
+    const d = trialMove(P, st, chosen.i, chosen.s); commitDelta(st, d);
+    tabu.set(`${chosen.i}:${chosen.s}`, iter + 12);
+    const cur = stateScore(st);
+    if (cur < bs) { bs = cur; best = [...st.assign]; }
   }
-  return improve(best, P, 300);
+  return improveFast(P, best, deadline, 120);
 }
 
+export function polishSolution(P: P, sol: number[], ms: number): number[] {
+  return improveFast(P, sol, Date.now() + ms, 200);
+}
 export function runSolver(model: "cp" | "ga" | "tabu", timeoutSec: number) {
   const P = loadProblem();
   const t0 = Date.now(); const deadline = t0 + timeoutSec * 1000;
