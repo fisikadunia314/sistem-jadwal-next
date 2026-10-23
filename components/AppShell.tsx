@@ -14,6 +14,7 @@ const TITLES: Record<string, string> = {
   "/aturan": "⚙️ Aturan Penjadwalan",
   "/knowledge": "📚 Knowledge Base Algoritma",
   "/profil": "👤 Profil & Akun",
+  "/reset": "🧹 Reset Data (Demo)",
 };
 
 export default function AppShell({ user, children }: { user: ShellUser; children: React.ReactNode }) {
@@ -34,6 +35,7 @@ export default function AppShell({ user, children }: { user: ShellUser; children
     { href: "/master", icon: "🗂️", label: "Data Master", show: isAdmin },
     { href: "/solver", icon: "🤖", label: "Solver & Adu Model", show: isAdmin },
     { href: "/aturan", icon: "⚙️", label: "Aturan", show: isAdmin },
+    { href: "/reset", icon: "🧹", label: "Reset Data", show: isAdmin },
   ].filter(i => i.show);
 
   return (

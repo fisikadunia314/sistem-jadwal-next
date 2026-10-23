@@ -125,7 +125,7 @@ function perluWarnaGuru(): boolean {
     return false;
   } catch { return false; }
 }
-function isiWarnaGuru() { tx(() => {
+export function isiWarnaGuru() { tx(() => {
   const rows = db.prepare("SELECT id,color_hex FROM teachers ORDER BY id").all() as any[];
   const used: string[] = [];
   // Jarak persepsi sederhana (Delta E 76 di ruang CIELAB) agar warna awal benar-benar terasa berbeda.

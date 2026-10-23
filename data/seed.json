@@ -1,1117 +1,1105 @@
 {
-"teachers": [
-{
-"id": 10,
-"code": "G01",
-"name": "Budi Santoso",
-"max_jp_day": 6,
-"max_jp_week": 0
-},
-{
-"id": 11,
-"code": "G02",
-"name": "Rudi Hartono",
-"max_jp_day": 6,
-"max_jp_week": 0
-},
-{
-"id": 12,
-"code": "G03",
-"name": "Anisa Putri",
-"max_jp_day": 6,
-"max_jp_week": 0
-},
-{
-"id": 13,
-"code": "G04",
-"name": "Dedi Kurniawan",
-"max_jp_day": 6,
-"max_jp_week": 0
-},
-{
-"id": 14,
-"code": "G05",
-"name": "Fitriani",
-"max_jp_day": 6,
-"max_jp_week": 0
-},
-{
-"id": 15,
-"code": "G06",
-"name": "Joko Prasetyo",
-"max_jp_day": 6,
-"max_jp_week": 0
-},
-{
-"id": 16,
-"code": "G07",
-"name": "Lestari Wulandari",
-"max_jp_day": 6,
-"max_jp_week": 0
-},
-{
-"id": 17,
-"code": "G08",
-"name": "Dewi Lestari",
-"max_jp_day": 6,
-"max_jp_week": 0
-}
-],
-"subjects": [
-{
-"id": 10,
-"code": "MTK",
-"name": "Matematika",
-"prefer_pagi": 1
-},
-{
-"id": 11,
-"code": "BIN",
-"name": "Bahasa Indonesia",
-"prefer_pagi": 0
-},
-{
-"id": 12,
-"code": "BIG",
-"name": "Bahasa Inggris",
-"prefer_pagi": 0
-},
-{
-"id": 13,
-"code": "IPA",
-"name": "Ilmu Pengetahuan Alam",
-"prefer_pagi": 1
-},
-{
-"id": 14,
-"code": "IPS",
-"name": "Ilmu Pengetahuan Sosial",
-"prefer_pagi": 0
-},
-{
-"id": 15,
-"code": "PAI",
-"name": "Pendidikan Agama Islam",
-"prefer_pagi": 0
-},
-{
-"id": 16,
-"code": "PJOK",
-"name": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
-"prefer_pagi": 0
-},
-{
-"id": 17,
-"code": "SENI",
-"name": "Seni dan Budaya",
-"prefer_pagi": 0
-},
-{
-"id": 18,
-"code": "AKH",
-"name": "Akhlaq",
-"prefer_pagi": 0
-},
-{
-"id": 21,
-"code": "BSU",
-"name": "Bahasa Sunda",
-"prefer_pagi": 0
-},
-{
-"id": 22,
-"code": "BIO",
-"name": "Biologi",
-"prefer_pagi": 0
-},
-{
-"id": 23,
-"code": "EKO",
-"name": "Ekonomi",
-"prefer_pagi": 0
-},
-{
-"id": 24,
-"code": "FIQ",
-"name": "Fiqh",
-"prefer_pagi": 0
-},
-{
-"id": 25,
-"code": "FIS",
-"name": "Fisika",
-"prefer_pagi": 0
-},
-{
-"id": 26,
-"code": "GEO",
-"name": "Geografi",
-"prefer_pagi": 0
-},
-{
-"id": 27,
-"code": "HAD",
-"name": "Hadits",
-"prefer_pagi": 0
-},
-{
-"id": 30,
-"code": "IML",
-"name": "Imla",
-"prefer_pagi": 0
-},
-{
-"id": 31,
-"code": "INF",
-"name": "Informatika",
-"prefer_pagi": 0
-},
-{
-"id": 32,
-"code": "INS",
-"name": "Insya",
-"prefer_pagi": 0
-},
-{
-"id": 33,
-"code": "KIM",
-"name": "Kimia",
-"prefer_pagi": 0
-},
-{
-"id": 34,
-"code": "MAHF",
-"name": "Mahfudzhot",
-"prefer_pagi": 0
-},
-{
-"id": 36,
-"code": "MHD",
-"name": "Mustholah Hadits",
-"prefer_pagi": 0
-},
-{
-"id": 37,
-"code": "MUT",
-"name": "Muthola'ah",
-"prefer_pagi": 0
-},
-{
-"id": 38,
-"code": "NAH",
-"name": "Nahwu",
-"prefer_pagi": 0
-},
-{
-"id": 41,
-"code": "PKW",
-"name": "Pendidikan Kewirausahaan",
-"prefer_pagi": 0
-},
-{
-"id": 42,
-"code": "PP",
-"name": "Pendidikan Pancasila",
-"prefer_pagi": 0
-},
-{
-"id": 43,
-"code": "PRA",
-"name": "Prakarya",
-"prefer_pagi": 0
-},
-{
-"id": 44,
-"code": "SEJ",
-"name": "Sejarah",
-"prefer_pagi": 0
-},
-{
-"id": 46,
-"code": "SHO",
-"name": "Shorof",
-"prefer_pagi": 0
-},
-{
-"id": 47,
-"code": "SOS",
-"name": "Sosiologi",
-"prefer_pagi": 0
-},
-{
-"id": 48,
-"code": "TAF",
-"name": "Tafsir",
-"prefer_pagi": 0
-},
-{
-"id": 49,
-"code": "TAJ",
-"name": "Tajwid",
-"prefer_pagi": 0
-},
-{
-"id": 50,
-"code": "TAR",
-"name": "Tarekh",
-"prefer_pagi": 0
-},
-{
-"id": 51,
-"code": "TAU",
-"name": "Tauhid",
-"prefer_pagi": 0
-},
-{
-"id": 52,
-"code": "UQ",
-"name": "Ulumul Qur'an",
-"prefer_pagi": 0
-}
-],
-"classes": [
-{
-"id": 34,
-"name": "10-A"
-},
-{
-"id": 35,
-"name": "10-B"
-},
-{
-"id": 36,
-"name": "10-C"
-},
-{
-"id": 37,
-"name": "10-D"
-},
-{
-"id": 38,
-"name": "10-E"
-},
-{
-"id": 39,
-"name": "10-F"
-},
-{
-"id": 40,
-"name": "10-G"
-},
-{
-"id": 41,
-"name": "10-H"
-},
-{
-"id": 42,
-"name": "11-A"
-},
-{
-"id": 43,
-"name": "11-B"
-},
-{
-"id": 44,
-"name": "11-C"
-},
-{
-"id": 45,
-"name": "11-D"
-},
-{
-"id": 46,
-"name": "11-E"
-},
-{
-"id": 47,
-"name": "11-F"
-},
-{
-"id": 48,
-"name": "12-A"
-},
-{
-"id": 49,
-"name": "12-B"
-},
-{
-"id": 50,
-"name": "12-C"
-},
-{
-"id": 51,
-"name": "12-D"
-},
-{
-"id": 8,
-"name": "7-A"
-},
-{
-"id": 9,
-"name": "7-B"
-},
-{
-"id": 10,
-"name": "7-C"
-},
-{
-"id": 11,
-"name": "7-D"
-},
-{
-"id": 12,
-"name": "7-E"
-},
-{
-"id": 13,
-"name": "7-F"
-},
-{
-"id": 14,
-"name": "7-G"
-},
-{
-"id": 15,
-"name": "7-H"
-},
-{
-"id": 16,
-"name": "8-A"
-},
-{
-"id": 17,
-"name": "8-B"
-},
-{
-"id": 18,
-"name": "8-C"
-},
-{
-"id": 19,
-"name": "8-D"
-},
-{
-"id": 20,
-"name": "8-E"
-},
-{
-"id": 21,
-"name": "8-F"
-},
-{
-"id": 22,
-"name": "8-G"
-},
-{
-"id": 23,
-"name": "8-H"
-},
-{
-"id": 24,
-"name": "8-I"
-},
-{
-"id": 25,
-"name": "9-A"
-},
-{
-"id": 26,
-"name": "9-B"
-},
-{
-"id": 27,
-"name": "9-C"
-},
-{
-"id": 28,
-"name": "9-D"
-},
-{
-"id": 29,
-"name": "9-E"
-},
-{
-"id": 30,
-"name": "9-F"
-},
-{
-"id": 31,
-"name": "9-G"
-},
-{
-"id": 32,
-"name": "9-H"
-},
-{
-"id": 33,
-"name": "9-I"
-},
-{
-"id": 5,
-"name": "VII-A"
-},
-{
-"id": 6,
-"name": "VII-B"
-},
-{
-"id": 7,
-"name": "VIII-A"
-}
-],
-"assignments": [
-{
-"id": 26,
-"teacher_id": 10,
-"subject_id": 10,
-"class_id": 5,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 27,
-"teacher_id": 11,
-"subject_id": 11,
-"class_id": 5,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 28,
-"teacher_id": 12,
-"subject_id": 12,
-"class_id": 5,
-"jp_week": 3,
-"max_jp_day": 2
-},
-{
-"id": 29,
-"teacher_id": 13,
-"subject_id": 13,
-"class_id": 5,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 30,
-"teacher_id": 14,
-"subject_id": 14,
-"class_id": 5,
-"jp_week": 3,
-"max_jp_day": 2
-},
-{
-"id": 31,
-"teacher_id": 15,
-"subject_id": 15,
-"class_id": 5,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 32,
-"teacher_id": 16,
-"subject_id": 16,
-"class_id": 5,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 33,
-"teacher_id": 17,
-"subject_id": 17,
-"class_id": 5,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 34,
-"teacher_id": 10,
-"subject_id": 10,
-"class_id": 6,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 35,
-"teacher_id": 11,
-"subject_id": 11,
-"class_id": 6,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 36,
-"teacher_id": 12,
-"subject_id": 12,
-"class_id": 6,
-"jp_week": 3,
-"max_jp_day": 2
-},
-{
-"id": 37,
-"teacher_id": 13,
-"subject_id": 13,
-"class_id": 6,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 38,
-"teacher_id": 14,
-"subject_id": 14,
-"class_id": 6,
-"jp_week": 3,
-"max_jp_day": 2
-},
-{
-"id": 39,
-"teacher_id": 15,
-"subject_id": 15,
-"class_id": 6,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 40,
-"teacher_id": 16,
-"subject_id": 16,
-"class_id": 6,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 41,
-"teacher_id": 17,
-"subject_id": 17,
-"class_id": 6,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 42,
-"teacher_id": 10,
-"subject_id": 10,
-"class_id": 7,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 43,
-"teacher_id": 11,
-"subject_id": 11,
-"class_id": 7,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 44,
-"teacher_id": 12,
-"subject_id": 12,
-"class_id": 7,
-"jp_week": 3,
-"max_jp_day": 2
-},
-{
-"id": 45,
-"teacher_id": 13,
-"subject_id": 13,
-"class_id": 7,
-"jp_week": 4,
-"max_jp_day": 2
-},
-{
-"id": 46,
-"teacher_id": 14,
-"subject_id": 14,
-"class_id": 7,
-"jp_week": 3,
-"max_jp_day": 2
-},
-{
-"id": 47,
-"teacher_id": 15,
-"subject_id": 15,
-"class_id": 7,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 48,
-"teacher_id": 16,
-"subject_id": 16,
-"class_id": 7,
-"jp_week": 2,
-"max_jp_day": 2
-},
-{
-"id": 49,
-"teacher_id": 17,
-"subject_id": 17,
-"class_id": 7,
-"jp_week": 2,
-"max_jp_day": 2
-}
-],
-"unavailability": [
-{
-"entity_type": "teacher",
-"entity_id": 10,
-"day": "Jumat",
-"period": 1
-},
-{
-"entity_type": "teacher",
-"entity_id": 10,
-"day": "Jumat",
-"period": 2
-}
-],
-"entries": [
-{
-"id": 1009,
-"assignment_id": 26,
-"day": "Selasa",
-"period": 8
-},
-{
-"id": 1010,
-"assignment_id": 26,
-"day": "Rabu",
-"period": 2
-},
-{
-"id": 1011,
-"assignment_id": 26,
-"day": "Selasa",
-"period": 3
-},
-{
-"id": 1012,
-"assignment_id": 26,
-"day": "Rabu",
-"period": 1
-},
-{
-"id": 1013,
-"assignment_id": 27,
-"day": "Kamis",
-"period": 4
-},
-{
-"id": 1014,
-"assignment_id": 27,
-"day": "Selasa",
-"period": 1
-},
-{
-"id": 1015,
-"assignment_id": 27,
-"day": "Selasa",
-"period": 2
-},
-{
-"id": 1016,
-"assignment_id": 27,
-"day": "Kamis",
-"period": 3
-},
-{
-"id": 1017,
-"assignment_id": 28,
-"day": "Senin",
-"period": 8
-},
-{
-"id": 1018,
-"assignment_id": 28,
-"day": "Rabu",
-"period": 5
-},
-{
-"id": 1019,
-"assignment_id": 28,
-"day": "Senin",
-"period": 7
-},
-{
-"id": 1020,
-"assignment_id": 29,
-"day": "Rabu",
-"period": 3
-},
-{
-"id": 1021,
-"assignment_id": 29,
-"day": "Senin",
-"period": 3
-},
-{
-"id": 1022,
-"assignment_id": 29,
-"day": "Senin",
-"period": 2
-},
-{
-"id": 1023,
-"assignment_id": 29,
-"day": "Jumat",
-"period": 1
-},
-{
-"id": 1024,
-"assignment_id": 30,
-"day": "Rabu",
-"period": 6
-},
-{
-"id": 1025,
-"assignment_id": 30,
-"day": "Rabu",
-"period": 7
-},
-{
-"id": 1026,
-"assignment_id": 30,
-"day": "Senin",
-"period": 4
-},
-{
-"id": 1027,
-"assignment_id": 31,
-"day": "Selasa",
-"period": 7
-},
-{
-"id": 1028,
-"assignment_id": 31,
-"day": "Selasa",
-"period": 6
-},
-{
-"id": 1029,
-"assignment_id": 32,
-"day": "Senin",
-"period": 6
-},
-{
-"id": 1030,
-"assignment_id": 32,
-"day": "Senin",
-"period": 5
-},
-{
-"id": 1031,
-"assignment_id": 33,
-"day": "Selasa",
-"period": 4
-},
-{
-"id": 1032,
-"assignment_id": 33,
-"day": "Selasa",
-"period": 5
-},
-{
-"id": 1033,
-"assignment_id": 34,
-"day": "Kamis",
-"period": 1
-},
-{
-"id": 1034,
-"assignment_id": 34,
-"day": "Senin",
-"period": 3
-},
-{
-"id": 1035,
-"assignment_id": 34,
-"day": "Kamis",
-"period": 2
-},
-{
-"id": 1036,
-"assignment_id": 34,
-"day": "Senin",
-"period": 2
-},
-{
-"id": 1037,
-"assignment_id": 35,
-"day": "Selasa",
-"period": 5
-},
-{
-"id": 1038,
-"assignment_id": 35,
-"day": "Rabu",
-"period": 4
-},
-{
-"id": 1039,
-"assignment_id": 35,
-"day": "Selasa",
-"period": 4
-},
-{
-"id": 1040,
-"assignment_id": 35,
-"day": "Rabu",
-"period": 3
-},
-{
-"id": 1041,
-"assignment_id": 36,
-"day": "Kamis",
-"period": 5
-},
-{
-"id": 1042,
-"assignment_id": 36,
-"day": "Rabu",
-"period": 7
-},
-{
-"id": 1043,
-"assignment_id": 36,
-"day": "Kamis",
-"period": 6
-},
-{
-"id": 1044,
-"assignment_id": 37,
-"day": "Rabu",
-"period": 2
-},
-{
-"id": 1045,
-"assignment_id": 37,
-"day": "Selasa",
-"period": 2
-},
-{
-"id": 1046,
-"assignment_id": 37,
-"day": "Selasa",
-"period": 1
-},
-{
-"id": 1047,
-"assignment_id": 37,
-"day": "Rabu",
-"period": 1
-},
-{
-"id": 1048,
-"assignment_id": 38,
-"day": "Selasa",
-"period": 3
-},
-{
-"id": 1049,
-"assignment_id": 38,
-"day": "Jumat",
-"period": 3
-},
-{
-"id": 1050,
-"assignment_id": 38,
-"day": "Jumat",
-"period": 4
-},
-{
-"id": 1051,
-"assignment_id": 39,
-"day": "Kamis",
-"period": 3
-},
-{
-"id": 1052,
-"assignment_id": 39,
-"day": "Kamis",
-"period": 4
-},
-{
-"id": 1053,
-"assignment_id": 40,
-"day": "Jumat",
-"period": 2
-},
-{
-"id": 1054,
-"assignment_id": 40,
-"day": "Jumat",
-"period": 1
-},
-{
-"id": 1055,
-"assignment_id": 41,
-"day": "Rabu",
-"period": 6
-},
-{
-"id": 1056,
-"assignment_id": 41,
-"day": "Rabu",
-"period": 5
-},
-{
-"id": 1057,
-"assignment_id": 42,
-"day": "Selasa",
-"period": 1
-},
-{
-"id": 1058,
-"assignment_id": 42,
-"day": "Kamis",
-"period": 3
-},
-{
-"id": 1059,
-"assignment_id": 42,
-"day": "Selasa",
-"period": 2
-},
-{
-"id": 1060,
-"assignment_id": 42,
-"day": "Rabu",
-"period": 3
-},
-{
-"id": 1061,
-"assignment_id": 43,
-"day": "Senin",
-"period": 5
-},
-{
-"id": 1062,
-"assignment_id": 43,
-"day": "Senin",
-"period": 6
-},
-{
-"id": 1063,
-"assignment_id": 43,
-"day": "Rabu",
-"period": 1
-},
-{
-"id": 1064,
-"assignment_id": 43,
-"day": "Rabu",
-"period": 2
-},
-{
-"id": 1065,
-"assignment_id": 44,
-"day": "Selasa",
-"period": 4
-},
-{
-"id": 1066,
-"assignment_id": 44,
-"day": "Selasa",
-"period": 5
-},
-{
-"id": 1067,
-"assignment_id": 44,
-"day": "Rabu",
-"period": 6
-},
-{
-"id": 1068,
-"assignment_id": 45,
-"day": "Jumat",
-"period": 2
-},
-{
-"id": 1069,
-"assignment_id": 45,
-"day": "Kamis",
-"period": 2
-},
-{
-"id": 1070,
-"assignment_id": 45,
-"day": "Selasa",
-"period": 3
-},
-{
-"id": 1071,
-"assignment_id": 45,
-"day": "Kamis",
-"period": 1
-},
-{
-"id": 1072,
-"assignment_id": 46,
-"day": "Kamis",
-"period": 4
-},
-{
-"id": 1073,
-"assignment_id": 46,
-"day": "Jumat",
-"period": 7
-},
-{
-"id": 1074,
-"assignment_id": 46,
-"day": "Kamis",
-"period": 5
-},
-{
-"id": 1075,
-"assignment_id": 47,
-"day": "Rabu",
-"period": 4
-},
-{
-"id": 1076,
-"assignment_id": 47,
-"day": "Rabu",
-"period": 5
-},
-{
-"id": 1077,
-"assignment_id": 48,
-"day": "Jumat",
-"period": 4
-},
-{
-"id": 1078,
-"assignment_id": 48,
-"day": "Jumat",
-"period": 3
-},
-{
-"id": 1079,
-"assignment_id": 49,
-"day": "Kamis",
-"period": 7
-},
-{
-"id": 1080,
-"assignment_id": 49,
-"day": "Kamis",
-"period": 6
-}
-],
-"settings": {
-"active_days": "Senin,Selasa,Rabu,Kamis,Jumat",
-"periods_per_day": "8",
-"solver_seconds": "30",
-"use_rooms": "0",
-"w_gap_class": "10",
-"w_gap_teacher": "5",
-"w_group": "8",
-"w_last_period": "2",
-"w_morning": "3",
-"friday_periods": "6",
-"friday_layout_v2": "1"
-}
+  "teachers": [
+    {
+      "id": 10,
+      "code": "G01",
+      "name": "Budi Santoso",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    },
+    {
+      "id": 11,
+      "code": "G02",
+      "name": "Rudi Hartono",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    },
+    {
+      "id": 12,
+      "code": "G03",
+      "name": "Anisa Putri",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    },
+    {
+      "id": 13,
+      "code": "G04",
+      "name": "Dedi Kurniawan",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    },
+    {
+      "id": 14,
+      "code": "G05",
+      "name": "Fitriani",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    },
+    {
+      "id": 15,
+      "code": "G06",
+      "name": "Joko Prasetyo",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    },
+    {
+      "id": 16,
+      "code": "G07",
+      "name": "Lestari Wulandari",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    },
+    {
+      "id": 17,
+      "code": "G08",
+      "name": "Dewi Lestari",
+      "max_jp_day": 6,
+      "max_jp_week": 0
+    }
+  ],
+  "subjects": [
+    {
+      "id": 10,
+      "code": "MTK",
+      "name": "Matematika",
+      "prefer_pagi": 1
+    },
+    {
+      "id": 11,
+      "code": "BIN",
+      "name": "Bahasa Indonesia",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 12,
+      "code": "BIG",
+      "name": "Bahasa Inggris",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 13,
+      "code": "IPA",
+      "name": "Ilmu Pengetahuan Alam",
+      "prefer_pagi": 1
+    },
+    {
+      "id": 14,
+      "code": "IPS",
+      "name": "Ilmu Pengetahuan Sosial",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 15,
+      "code": "PAI",
+      "name": "Pendidikan Agama Islam",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 16,
+      "code": "PJOK",
+      "name": "Pendidikan Jasmani, Olahraga, dan Kesehatan",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 17,
+      "code": "SENI",
+      "name": "Seni dan Budaya",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 18,
+      "code": "AKH",
+      "name": "Akhlaq",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 21,
+      "code": "BSU",
+      "name": "Bahasa Sunda",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 22,
+      "code": "BIO",
+      "name": "Biologi",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 23,
+      "code": "EKO",
+      "name": "Ekonomi",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 24,
+      "code": "FIQ",
+      "name": "Fiqh",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 25,
+      "code": "FIS",
+      "name": "Fisika",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 26,
+      "code": "GEO",
+      "name": "Geografi",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 27,
+      "code": "HAD",
+      "name": "Hadits",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 30,
+      "code": "IML",
+      "name": "Imla",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 31,
+      "code": "INF",
+      "name": "Informatika",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 32,
+      "code": "INS",
+      "name": "Insya",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 33,
+      "code": "KIM",
+      "name": "Kimia",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 34,
+      "code": "MAHF",
+      "name": "Mahfudzhot",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 36,
+      "code": "MHD",
+      "name": "Mustholah Hadits",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 37,
+      "code": "MUT",
+      "name": "Muthola'ah",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 38,
+      "code": "NAH",
+      "name": "Nahwu",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 41,
+      "code": "PKW",
+      "name": "Pendidikan Kewirausahaan",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 42,
+      "code": "PP",
+      "name": "Pendidikan Pancasila",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 43,
+      "code": "PRA",
+      "name": "Prakarya",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 44,
+      "code": "SEJ",
+      "name": "Sejarah",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 46,
+      "code": "SHO",
+      "name": "Shorof",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 47,
+      "code": "SOS",
+      "name": "Sosiologi",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 48,
+      "code": "TAF",
+      "name": "Tafsir",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 49,
+      "code": "TAJ",
+      "name": "Tajwid",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 50,
+      "code": "TAR",
+      "name": "Tarekh",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 51,
+      "code": "TAU",
+      "name": "Tauhid",
+      "prefer_pagi": 0
+    },
+    {
+      "id": 52,
+      "code": "UQ",
+      "name": "Ulumul Qur'an",
+      "prefer_pagi": 0
+    }
+  ],
+  "classes": [
+    {
+      "id": 34,
+      "name": "10-A"
+    },
+    {
+      "id": 35,
+      "name": "10-B"
+    },
+    {
+      "id": 36,
+      "name": "10-C"
+    },
+    {
+      "id": 37,
+      "name": "10-D"
+    },
+    {
+      "id": 38,
+      "name": "10-E"
+    },
+    {
+      "id": 39,
+      "name": "10-F"
+    },
+    {
+      "id": 40,
+      "name": "10-G"
+    },
+    {
+      "id": 41,
+      "name": "10-H"
+    },
+    {
+      "id": 42,
+      "name": "11-A"
+    },
+    {
+      "id": 43,
+      "name": "11-B"
+    },
+    {
+      "id": 44,
+      "name": "11-C"
+    },
+    {
+      "id": 45,
+      "name": "11-D"
+    },
+    {
+      "id": 46,
+      "name": "11-E"
+    },
+    {
+      "id": 47,
+      "name": "11-F"
+    },
+    {
+      "id": 48,
+      "name": "12-A"
+    },
+    {
+      "id": 49,
+      "name": "12-B"
+    },
+    {
+      "id": 50,
+      "name": "12-C"
+    },
+    {
+      "id": 51,
+      "name": "12-D"
+    },
+    {
+      "id": 8,
+      "name": "7-A"
+    },
+    {
+      "id": 9,
+      "name": "7-B"
+    },
+    {
+      "id": 10,
+      "name": "7-C"
+    },
+    {
+      "id": 11,
+      "name": "7-D"
+    },
+    {
+      "id": 12,
+      "name": "7-E"
+    },
+    {
+      "id": 13,
+      "name": "7-F"
+    },
+    {
+      "id": 14,
+      "name": "7-G"
+    },
+    {
+      "id": 15,
+      "name": "7-H"
+    },
+    {
+      "id": 16,
+      "name": "8-A"
+    },
+    {
+      "id": 17,
+      "name": "8-B"
+    },
+    {
+      "id": 18,
+      "name": "8-C"
+    },
+    {
+      "id": 19,
+      "name": "8-D"
+    },
+    {
+      "id": 20,
+      "name": "8-E"
+    },
+    {
+      "id": 21,
+      "name": "8-F"
+    },
+    {
+      "id": 22,
+      "name": "8-G"
+    },
+    {
+      "id": 23,
+      "name": "8-H"
+    },
+    {
+      "id": 24,
+      "name": "8-I"
+    },
+    {
+      "id": 25,
+      "name": "9-A"
+    },
+    {
+      "id": 26,
+      "name": "9-B"
+    },
+    {
+      "id": 27,
+      "name": "9-C"
+    },
+    {
+      "id": 28,
+      "name": "9-D"
+    },
+    {
+      "id": 29,
+      "name": "9-E"
+    },
+    {
+      "id": 30,
+      "name": "9-F"
+    },
+    {
+      "id": 31,
+      "name": "9-G"
+    },
+    {
+      "id": 32,
+      "name": "9-H"
+    },
+    {
+      "id": 33,
+      "name": "9-I"
+    }
+  ],
+  "assignments": [
+    {
+      "id": 26,
+      "teacher_id": 10,
+      "subject_id": 10,
+      "class_id": 8,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 27,
+      "teacher_id": 11,
+      "subject_id": 11,
+      "class_id": 8,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 28,
+      "teacher_id": 12,
+      "subject_id": 12,
+      "class_id": 8,
+      "jp_week": 3,
+      "max_jp_day": 2
+    },
+    {
+      "id": 29,
+      "teacher_id": 13,
+      "subject_id": 13,
+      "class_id": 8,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 30,
+      "teacher_id": 14,
+      "subject_id": 14,
+      "class_id": 8,
+      "jp_week": 3,
+      "max_jp_day": 2
+    },
+    {
+      "id": 31,
+      "teacher_id": 15,
+      "subject_id": 15,
+      "class_id": 8,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 32,
+      "teacher_id": 16,
+      "subject_id": 16,
+      "class_id": 8,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 33,
+      "teacher_id": 17,
+      "subject_id": 17,
+      "class_id": 8,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 34,
+      "teacher_id": 10,
+      "subject_id": 10,
+      "class_id": 9,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 35,
+      "teacher_id": 11,
+      "subject_id": 11,
+      "class_id": 9,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 36,
+      "teacher_id": 12,
+      "subject_id": 12,
+      "class_id": 9,
+      "jp_week": 3,
+      "max_jp_day": 2
+    },
+    {
+      "id": 37,
+      "teacher_id": 13,
+      "subject_id": 13,
+      "class_id": 9,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 38,
+      "teacher_id": 14,
+      "subject_id": 14,
+      "class_id": 9,
+      "jp_week": 3,
+      "max_jp_day": 2
+    },
+    {
+      "id": 39,
+      "teacher_id": 15,
+      "subject_id": 15,
+      "class_id": 9,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 40,
+      "teacher_id": 16,
+      "subject_id": 16,
+      "class_id": 9,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 41,
+      "teacher_id": 17,
+      "subject_id": 17,
+      "class_id": 9,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 42,
+      "teacher_id": 10,
+      "subject_id": 10,
+      "class_id": 16,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 43,
+      "teacher_id": 11,
+      "subject_id": 11,
+      "class_id": 16,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 44,
+      "teacher_id": 12,
+      "subject_id": 12,
+      "class_id": 16,
+      "jp_week": 3,
+      "max_jp_day": 2
+    },
+    {
+      "id": 45,
+      "teacher_id": 13,
+      "subject_id": 13,
+      "class_id": 16,
+      "jp_week": 4,
+      "max_jp_day": 2
+    },
+    {
+      "id": 46,
+      "teacher_id": 14,
+      "subject_id": 14,
+      "class_id": 16,
+      "jp_week": 3,
+      "max_jp_day": 2
+    },
+    {
+      "id": 47,
+      "teacher_id": 15,
+      "subject_id": 15,
+      "class_id": 16,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 48,
+      "teacher_id": 16,
+      "subject_id": 16,
+      "class_id": 16,
+      "jp_week": 2,
+      "max_jp_day": 2
+    },
+    {
+      "id": 49,
+      "teacher_id": 17,
+      "subject_id": 17,
+      "class_id": 16,
+      "jp_week": 2,
+      "max_jp_day": 2
+    }
+  ],
+  "unavailability": [
+    {
+      "entity_type": "teacher",
+      "entity_id": 10,
+      "day": "Jumat",
+      "period": 1
+    },
+    {
+      "entity_type": "teacher",
+      "entity_id": 10,
+      "day": "Jumat",
+      "period": 2
+    }
+  ],
+  "entries": [
+    {
+      "id": 1009,
+      "assignment_id": 26,
+      "day": "Selasa",
+      "period": 8
+    },
+    {
+      "id": 1010,
+      "assignment_id": 26,
+      "day": "Rabu",
+      "period": 2
+    },
+    {
+      "id": 1011,
+      "assignment_id": 26,
+      "day": "Selasa",
+      "period": 3
+    },
+    {
+      "id": 1012,
+      "assignment_id": 26,
+      "day": "Rabu",
+      "period": 1
+    },
+    {
+      "id": 1013,
+      "assignment_id": 27,
+      "day": "Kamis",
+      "period": 4
+    },
+    {
+      "id": 1014,
+      "assignment_id": 27,
+      "day": "Selasa",
+      "period": 1
+    },
+    {
+      "id": 1015,
+      "assignment_id": 27,
+      "day": "Selasa",
+      "period": 2
+    },
+    {
+      "id": 1016,
+      "assignment_id": 27,
+      "day": "Kamis",
+      "period": 3
+    },
+    {
+      "id": 1017,
+      "assignment_id": 28,
+      "day": "Senin",
+      "period": 8
+    },
+    {
+      "id": 1018,
+      "assignment_id": 28,
+      "day": "Rabu",
+      "period": 5
+    },
+    {
+      "id": 1019,
+      "assignment_id": 28,
+      "day": "Senin",
+      "period": 7
+    },
+    {
+      "id": 1020,
+      "assignment_id": 29,
+      "day": "Rabu",
+      "period": 3
+    },
+    {
+      "id": 1021,
+      "assignment_id": 29,
+      "day": "Senin",
+      "period": 3
+    },
+    {
+      "id": 1022,
+      "assignment_id": 29,
+      "day": "Senin",
+      "period": 2
+    },
+    {
+      "id": 1023,
+      "assignment_id": 29,
+      "day": "Jumat",
+      "period": 1
+    },
+    {
+      "id": 1024,
+      "assignment_id": 30,
+      "day": "Rabu",
+      "period": 6
+    },
+    {
+      "id": 1025,
+      "assignment_id": 30,
+      "day": "Rabu",
+      "period": 7
+    },
+    {
+      "id": 1026,
+      "assignment_id": 30,
+      "day": "Senin",
+      "period": 4
+    },
+    {
+      "id": 1027,
+      "assignment_id": 31,
+      "day": "Selasa",
+      "period": 7
+    },
+    {
+      "id": 1028,
+      "assignment_id": 31,
+      "day": "Selasa",
+      "period": 6
+    },
+    {
+      "id": 1029,
+      "assignment_id": 32,
+      "day": "Senin",
+      "period": 6
+    },
+    {
+      "id": 1030,
+      "assignment_id": 32,
+      "day": "Senin",
+      "period": 5
+    },
+    {
+      "id": 1031,
+      "assignment_id": 33,
+      "day": "Selasa",
+      "period": 4
+    },
+    {
+      "id": 1032,
+      "assignment_id": 33,
+      "day": "Selasa",
+      "period": 5
+    },
+    {
+      "id": 1033,
+      "assignment_id": 34,
+      "day": "Kamis",
+      "period": 1
+    },
+    {
+      "id": 1034,
+      "assignment_id": 34,
+      "day": "Senin",
+      "period": 3
+    },
+    {
+      "id": 1035,
+      "assignment_id": 34,
+      "day": "Kamis",
+      "period": 2
+    },
+    {
+      "id": 1036,
+      "assignment_id": 34,
+      "day": "Senin",
+      "period": 2
+    },
+    {
+      "id": 1037,
+      "assignment_id": 35,
+      "day": "Selasa",
+      "period": 5
+    },
+    {
+      "id": 1038,
+      "assignment_id": 35,
+      "day": "Rabu",
+      "period": 4
+    },
+    {
+      "id": 1039,
+      "assignment_id": 35,
+      "day": "Selasa",
+      "period": 4
+    },
+    {
+      "id": 1040,
+      "assignment_id": 35,
+      "day": "Rabu",
+      "period": 3
+    },
+    {
+      "id": 1041,
+      "assignment_id": 36,
+      "day": "Kamis",
+      "period": 5
+    },
+    {
+      "id": 1042,
+      "assignment_id": 36,
+      "day": "Rabu",
+      "period": 7
+    },
+    {
+      "id": 1043,
+      "assignment_id": 36,
+      "day": "Kamis",
+      "period": 6
+    },
+    {
+      "id": 1044,
+      "assignment_id": 37,
+      "day": "Rabu",
+      "period": 2
+    },
+    {
+      "id": 1045,
+      "assignment_id": 37,
+      "day": "Selasa",
+      "period": 2
+    },
+    {
+      "id": 1046,
+      "assignment_id": 37,
+      "day": "Selasa",
+      "period": 1
+    },
+    {
+      "id": 1047,
+      "assignment_id": 37,
+      "day": "Rabu",
+      "period": 1
+    },
+    {
+      "id": 1048,
+      "assignment_id": 38,
+      "day": "Selasa",
+      "period": 3
+    },
+    {
+      "id": 1049,
+      "assignment_id": 38,
+      "day": "Jumat",
+      "period": 3
+    },
+    {
+      "id": 1050,
+      "assignment_id": 38,
+      "day": "Jumat",
+      "period": 4
+    },
+    {
+      "id": 1051,
+      "assignment_id": 39,
+      "day": "Kamis",
+      "period": 3
+    },
+    {
+      "id": 1052,
+      "assignment_id": 39,
+      "day": "Kamis",
+      "period": 4
+    },
+    {
+      "id": 1053,
+      "assignment_id": 40,
+      "day": "Jumat",
+      "period": 2
+    },
+    {
+      "id": 1054,
+      "assignment_id": 40,
+      "day": "Jumat",
+      "period": 1
+    },
+    {
+      "id": 1055,
+      "assignment_id": 41,
+      "day": "Rabu",
+      "period": 6
+    },
+    {
+      "id": 1056,
+      "assignment_id": 41,
+      "day": "Rabu",
+      "period": 5
+    },
+    {
+      "id": 1057,
+      "assignment_id": 42,
+      "day": "Selasa",
+      "period": 1
+    },
+    {
+      "id": 1058,
+      "assignment_id": 42,
+      "day": "Kamis",
+      "period": 3
+    },
+    {
+      "id": 1059,
+      "assignment_id": 42,
+      "day": "Selasa",
+      "period": 2
+    },
+    {
+      "id": 1060,
+      "assignment_id": 42,
+      "day": "Rabu",
+      "period": 3
+    },
+    {
+      "id": 1061,
+      "assignment_id": 43,
+      "day": "Senin",
+      "period": 5
+    },
+    {
+      "id": 1062,
+      "assignment_id": 43,
+      "day": "Senin",
+      "period": 6
+    },
+    {
+      "id": 1063,
+      "assignment_id": 43,
+      "day": "Rabu",
+      "period": 1
+    },
+    {
+      "id": 1064,
+      "assignment_id": 43,
+      "day": "Rabu",
+      "period": 2
+    },
+    {
+      "id": 1065,
+      "assignment_id": 44,
+      "day": "Selasa",
+      "period": 4
+    },
+    {
+      "id": 1066,
+      "assignment_id": 44,
+      "day": "Selasa",
+      "period": 5
+    },
+    {
+      "id": 1067,
+      "assignment_id": 44,
+      "day": "Rabu",
+      "period": 6
+    },
+    {
+      "id": 1068,
+      "assignment_id": 45,
+      "day": "Jumat",
+      "period": 2
+    },
+    {
+      "id": 1069,
+      "assignment_id": 45,
+      "day": "Kamis",
+      "period": 2
+    },
+    {
+      "id": 1070,
+      "assignment_id": 45,
+      "day": "Selasa",
+      "period": 3
+    },
+    {
+      "id": 1071,
+      "assignment_id": 45,
+      "day": "Kamis",
+      "period": 1
+    },
+    {
+      "id": 1072,
+      "assignment_id": 46,
+      "day": "Kamis",
+      "period": 4
+    },
+    {
+      "id": 1073,
+      "assignment_id": 46,
+      "day": "Jumat",
+      "period": 7
+    },
+    {
+      "id": 1074,
+      "assignment_id": 46,
+      "day": "Kamis",
+      "period": 5
+    },
+    {
+      "id": 1075,
+      "assignment_id": 47,
+      "day": "Rabu",
+      "period": 4
+    },
+    {
+      "id": 1076,
+      "assignment_id": 47,
+      "day": "Rabu",
+      "period": 5
+    },
+    {
+      "id": 1077,
+      "assignment_id": 48,
+      "day": "Jumat",
+      "period": 4
+    },
+    {
+      "id": 1078,
+      "assignment_id": 48,
+      "day": "Jumat",
+      "period": 3
+    },
+    {
+      "id": 1079,
+      "assignment_id": 49,
+      "day": "Kamis",
+      "period": 7
+    },
+    {
+      "id": 1080,
+      "assignment_id": 49,
+      "day": "Kamis",
+      "period": 6
+    }
+  ],
+  "settings": {
+    "active_days": "Senin,Selasa,Rabu,Kamis,Jumat",
+    "periods_per_day": "8",
+    "solver_seconds": "30",
+    "use_rooms": "0",
+    "w_gap_class": "10",
+    "w_gap_teacher": "5",
+    "w_group": "8",
+    "w_last_period": "2",
+    "w_morning": "3",
+    "friday_periods": "6",
+    "friday_layout_v2": "1"
+  }
 }

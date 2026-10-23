@@ -210,3 +210,66 @@ Pendidikan Jasmani, Olahraga, dan Kesehatan -> PJOK).
 Flowchart di Knowledge Base dirender memakai library Mermaid (layout otomatis dagre,
 dibundel lokal via komponen components/MermaidDiagram.tsx; definisi diagram berupa teks
 FLOW_MAIN/FLOW_CPSAT/FLOW_GA/FLOW_TABU di app/knowledge/page.tsx).
+
+### Alamat `0.0.0.0` muncul di browser
+
+Kalau setelah logout alamat bar berubah jadi `http://0.0.0.0:3000/login` (atau
+halaman jadi tidak bisa dibuka), itu bukan bug port, melainkan redirect yang
+membangun URL absolut dari request. Server dijalankan dengan `-H 0.0.0.0`
+supaya bisa diakses dari HP/LAN/container, dan `0.0.0.0` bukan alamat tujuan
+yang valid di browser.
+
+Perbaikannya sudah ada di `app/logout/route.ts`: redirect memakai `Location`
+relatif (`/login`), jadi browser tetap di host yang sedang dipakai
+(localhost, IP LAN, atau domain proxy). Hal yang sama berlaku untuk
+`redirect()` Next di halaman lain.
+
+Prinsipnya: `0.0.0.0` hanya untuk *bind* di server, jangan pernah dikirim ke
+browser sebagai tujuan. `scripts/start.mjs` sekarang mencetak alamat yang
+benar-benar bisa dibuka (localhost + IP LAN).
+
+## Reset Data untuk Demo (menu 🧹 Reset Data)
+
+Khusus Superadmin. Halaman `/reset` menyediakan lima pilihan, semuanya
+berjalan dalam satu transaksi dan meminta kata konfirmasi yang harus diketik
+(tidak memakai `confirm()` browser):
+
+| Pilihan | Yang dihapus | Yang tetap |
+| --- | --- | --- |
+| Kosongkan Jadwal Saja | semua kartu jadwal + pengajuan | guru, mapel, kelas, penugasan, akun |
+| Kosongkan Jadwal + Penugasan | jadwal + penugasan | guru, mapel, kelas, akun |
+| Kosongkan Semua Data Master | semua data master + jadwal | akun (kaitan ke guru dilepas) |
+| Reset Total | semua data + akun pegawai | akun Superadmin yang sedang login |
+| Muat Ulang Data Contoh | diganti data seed | 8 guru, 35 mapel, 47 kelas, 24 penugasan, 72 jadwal, akun contoh |
+
+Alur demo yang disarankan: **Kosongkan Jadwal Saja** → buka **Solver** →
+Generate CP-SAT (papan terisi kembali dalam ±1 detik) → setelah demo
+**Muat Ulang Data Contoh** untuk kembali ke kondisi awal.
+
+Endpoint: `GET /api/reset` (ringkasan jumlah baris) dan `POST /api/reset`
+dengan body `{ "scope": "jadwal|penugasan|master|total|seed", "konfirmasi": "HAPUS" }`
+(mode `seed` memakai kata `SEED`). Non-admin mendapat 403.
+
+## Area Cadangan (parkir kartu) — cara membatalkan
+
+Memarkir kartu hanya menyembunyikannya di browser (belum tersimpan ke server).
+Untuk mengembalikannya ada tiga cara, semuanya tanpa mengubah data di server:
+
+1. Klik **↩** pada kartu di Area Cadangan.
+2. Seret kartu kembali ke **sel asalnya** (muncul "Lepas untuk membatalkan parkir").
+3. Klik **Kembalikan semua (n)** untuk mengembalikan seluruh isi cadangan.
+
+Blok 2JP ikut aturan yang sama: diparkir sebagai satu kesatuan dan dikembalikan
+ke sesi asalnya masih utuh. Daftar parkir juga dibersihkan otomatis saat papan
+dimuat ulang, sehingga tidak ada lagi sel yang "tertutup 🅿️" karena kartunya
+sudah tidak ada (mis. setelah generate ulang).
+
+## Struktur kelas
+
+`data/seed.json` memakai 44 kelas bernama angka: `7-A` … `8-I`, `9-A` … `9-I`,
+`10-A` … `12-D`. Sebelumnya ada 3 kelas duplikat bernama Romawi (`VII-A`,
+`VII-B`, `VIII-A`) yang justru dipakai seluruh penugasan; duplikat itu sudah
+dihapus dan penugasannya dipindahkan ke `7-A`, `7-B`, dan `8-A`.
+
+Bagi yang sudah punya `data/app.db` lama: buka **🧹 Reset Data → Muat Ulang
+Data Contoh** sekali supaya struktur kelas baru terpakai.

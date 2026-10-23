@@ -38,6 +38,9 @@ export default function Board() {
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || "Gagal memuat papan");
     setBoard(d);
+    // Buang id parkir yang kartunya sudah tidak ada (mis. jadwal baru di-generate),
+    // supaya Area Cadangan tidak menyimpan "kartu hantu" dan sel tidak tertutup 🅿️ selamanya.
+    setParked(p => p.filter(id => (d.entries as Entry[]).some(e => e.id === id)));
     if (!quiet) show("✅ Papan disegarkan dari server.", true);
   }, [show]);
 
@@ -138,6 +141,12 @@ export default function Board() {
     dragStatusTimer.current = null;
     setDragStatus("");
   }
+  // Batalkan parkir: kartu kembali tampil di posisi asalnya. Tidak ada request ke server
+  // karena memarkir memang hanya "menyembunyikan" kartu di browser (belum tersimpan).
+  function unpark(ids: number[], label: string) {
+    setParked(p => p.filter(id => !ids.includes(id)));
+    show("↩️ " + label, true);
+  }
   function onDragStart(e: Entry, pairId?: number | null) {
     setDragStatus("⏳ Mengecek slot aman…");
     // Versi useState: opsi dibaca/dihitung tepat saat kartu diangkat, lalu disimpan ke
@@ -234,17 +243,42 @@ export default function Board() {
                   const e1 = byCell.get(`${c.name}|${key(b.day, b.p1)}`), e2 = byCell.get(`${c.name}|${key(b.day, b.p2)}`);
                   const merged = e1 && e2 && e1.assignment_id === e2.assignment_id ? e1 : null;
                   const pairId = merged ? e2!.id : null;
+                  // Blok 2JP yang sedang diparkir boleh dilepas kembali ke sesi asalnya.
+                  const ownBlockCell = () => {
+                    if (!dragPair.current || !dragEntry.current || dragEntry.current.class_name !== c.name) return false;
+                    const mate = board.entries.find(x => x.id === dragPair.current);
+                    return !!mate && dragEntry.current.day === b.day && Math.min(dragEntry.current.period, mate.period) === b.p1;
+                  };
                   const dropProps = (p: number) => ({
-                    onDragOver: (ev: any) => { if (dragId) { const o = slotMap[key(b.day, p)]; const occ = byCell.get(`${c.name}|${key(b.day, p)}`);
+                    onDragOver: (ev: any) => { if (!dragId) return;
+                      // kembali ke posisi asal = batal parkir (bukan "posisi kartu sendiri")
+                      if (ownBlockCell() && dragEntry.current && parked.includes(dragEntry.current.id)) { ev.preventDefault(); show("↩️ Lepas untuk mengembalikan blok ke posisi semula (batal parkir).", true); return; }
+                      const o = slotMap[key(b.day, p)]; const occ = byCell.get(`${c.name}|${key(b.day, p)}`);
+                      if (occ && occ.id === dragId && parked.includes(dragId)) { ev.preventDefault(); show("↩️ Lepas untuk membatalkan parkir — kartu kembali ke posisi semula.", true); return; }
                       const swapOk = !dragPair.current && occ && swapSet.has(occ.id) && occ.id !== dragId;
                       const moveOk = dragEntry.current?.class_name === c.name && o?.status === "bisa";
                       const blockOk = dragPair.current && dragEntry.current?.class_name === c.name && slotMap[key(b.day, b.p1)]?.status === "bisa";
                       if (swapOk || moveOk || blockOk) { ev.preventDefault(); show(dragPair.current ? `🟢 ${b.day} JP${b.p1}-${b.p2} aman untuk blok 2JP — lepas untuk ` + (board.is_admin ? "menyimpan" : "mengajukan") : swapOk ? "🟣 Tukar aman — lepas untuk " + (board.is_admin ? "menukar" : "mengajukan tukar") : `🟢 ${b.day} JP${p} masih kosong/aman — lepas untuk ` + (board.is_admin ? "menyimpan di JP ini (berpasangan dalam blok)" : "mengajukan ke JP ini"), true); }
-                      else if (dragEntry.current?.class_name === c.name && o && o.status === "tidak") show(`🔴 ${b.day} JP${p} — ${o.reason}`, false); } },
+                      else if (dragEntry.current?.class_name === c.name && o && o.status === "tidak") show(`🔴 ${b.day} JP${p} — ${o.reason}`, false); },
                     onDrop: (ev: any) => { ev.preventDefault(); if (!dragId || !dragEntry.current) return;
-                      if (dragPair.current) { if (dragEntry.current.class_name === c.name && slotMap[key(b.day, b.p1)]?.status === "bisa") askMove({ mode: "pindah-blok", pairId: dragPair.current, day: b.day, period: b.p1 }, `blok 2 JP ${dragEntry.current.subject} ke ${b.day} JP${b.p1}-${b.p2}`); else show("🔴 Blok ini tidak aman untuk blok 2 JP: " + (slotMap[key(b.day, b.p1)]?.reason || "tidak aman"), false); return; }
+                      if (dragPair.current) {
+                        const mate = board.entries.find(x => x.id === dragPair.current);
+                        // Blok yang diparkir → dilepas di sesi asalnya = batal parkir (kartu kembali, server tidak disentuh)
+                        if (mate && ownBlockCell() && parked.includes(dragEntry.current.id)) {
+                          unpark([dragEntry.current.id, mate.id], `Blok ${dragEntry.current.scode} ${dragEntry.current.class_name} dikembalikan ke posisi semula (${b.day} JP${b.p1}-${b.p2}).`);
+                          return;
+                        }
+                        if (mate && ownBlockCell()) { show("ℹ️ Blok ini sudah berada di sesi tersebut.", null); return; }
+                        if (dragEntry.current.class_name === c.name && slotMap[key(b.day, b.p1)]?.status === "bisa") askMove({ mode: "pindah-blok", pairId: dragPair.current, day: b.day, period: b.p1 }, `blok 2 JP ${dragEntry.current.subject} ke ${b.day} JP${b.p1}-${b.p2}`); else show("🔴 Blok ini tidak aman untuk blok 2 JP: " + (slotMap[key(b.day, b.p1)]?.reason || "tidak aman"), false);
+                        return;
+                      }
                       const occ = byCell.get(`${c.name}|${key(b.day, p)}`);
-                      if (occ && occ.id === dragId) { show("ℹ️ Itu posisi kartu sendiri.", null); return; }
+                      // Kartu yang diparkir dilepas di sel asalnya → batal parkir
+                      if (occ && occ.id === dragId) {
+                        if (parked.includes(dragId)) unpark([dragId], `${occ.scode} ${occ.class_name} dikembalikan ke posisi semula (${occ.day} JP${occ.period}).`);
+                        else show("ℹ️ Itu posisi kartu sendiri.", null);
+                        return;
+                      }
                       const occMate = occ ? findPair(occ) : undefined;
                       if (occ && occMate && occMate.id !== dragId) { show(`🔴 ${occ.scode} adalah bagian dari blok 2JP yang sudah tetap — kartu 1JP tidak bisa menukar/memecah blok 2JP. Pilih slot kosong atau kartu 1JP lain.`, false); return; }
                       // dijatuhkan di atas kartu 1JP yang JP pasangannya masih KOSONG -> GABUNG dalam blok yang sama (isi JP kosongnya), bukan tukar
@@ -259,7 +293,9 @@ export default function Board() {
                     <td key={b.day + b.p1} className={`p-0 align-top ${b.firstOfDay ? "border-l-4 border-l-slate-400" : "border-l"}`}>
                       <div className="flex flex-col" style={{ height: rowH }}>
                         {merged && (parked.includes(e1!.id) || parked.includes(e2!.id)) ? (
-                          <div className="flex-1 flex items-center justify-center bg-amber-100 text-amber-800 font-bold">🅿️ di cadangan</div>
+                          // Sel ini WAJIB tetap punya drop handler, kalau tidak blok yang diparkir
+                          // tidak akan pernah bisa dikembalikan ke posisi asalnya.
+                          <div {...dropProps(b.p1)} className="flex-1 flex items-center justify-center bg-amber-100 text-amber-800 font-bold" title="Blok 2JP sedang diparkir — seret bloknya kembali ke sini untuk batal parkir">🅿️ di cadangan</div>
                         ) : merged ? (
                           <div {...dropProps(b.p1)} className="flex flex-1"><div draggable={merged.mine} onDragStart={() => onDragStart(merged, pairId)} onDragEnd={() => { clearDragStatus(); setDragId(null); dragEntry.current = null; dragPair.current = null; setSlotMap({}); setSwapSet(new Set()); }}
                             className={`flex-1 flex items-center gap-0.5 px-0.5 overflow-hidden border border-black/20 ${cellColor(b.p1)} ${ownCls(merged)} ${merged.mine ? "cursor-grab active:cursor-grabbing" : "opacity-90"}`}
@@ -288,24 +324,33 @@ export default function Board() {
       <div className="mt-3 border-2 border-dashed border-amber-300 bg-amber-50 rounded-xl p-3 min-h-[84px]"
         onDragOver={ev => { if (dragId) ev.preventDefault(); }}
         onDrop={ev => { ev.preventDefault(); clearDragStatus(); if (dragId) { const ids = dragPair.current ? [dragId, dragPair.current] : [dragId]; setParked(p => [...p, ...ids.filter(i => !p.includes(i))]); show(dragPair.current ? "🅿️ Blok 2JP diparkir utuh di Area Cadangan (belum tersimpan). Seret kembali sebagai satu kesatuan ke sesi hijau." : "🅿️ Kartu diparkir di Area Cadangan (belum tersimpan). Seret kembali ke sel hijau untuk menerapkan.", true); } setDragId(null); dragPair.current = null; setSlotMap({}); setSwapSet(new Set()); }}>
-        <div className="font-bold text-amber-800 text-sm">🅿️ Area Cadangan / Parkir — tempat mikir-mikir</div>
-        <p className="text-xs text-amber-700 mb-2">Seret kartu ke sini untuk memarkir sementara (belum tersimpan ke server). Seret kembali ke sel hijau untuk menerapkan, atau ke slot asalnya untuk batal parkir.</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="font-bold text-amber-800 text-sm">🅿️ Area Cadangan / Parkir — tempat mikir-mikir</div>
+          {parked.length > 0 && (
+            <button className="btn btn-xs btn-warning" onClick={() => { setParked([]); show("↩️ Semua kartu dikembalikan ke posisi semula (batal parkir).", true); }}>
+              ↩️ Kembalikan semua ({parked.length})
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-amber-700 mb-2">Seret kartu ke sini untuk memarkir sementara (belum tersimpan ke server). Untuk membatalkan: klik <b>↩</b> di kartu, seret kembali ke slot asalnya, atau pakai <b>Kembalikan semua</b>.</p>
         <div className="flex flex-wrap gap-1">
           {parked.map(id => { const e = board.entries.find(x => x.id === id); if (!e) return null;
             const mate = findPair(e);
-            if (mate && parked.includes(mate.id)) {
-              if (e.period > mate.period) return null; // tampilkan sekali saja sebagai satu kesatuan 2JP
-              return (
-                <div key={id} draggable={e.mine} onDragStart={() => onDragStart(e, mate.id)} onDragEnd={() => { clearDragStatus(); setDragId(null); dragEntry.current = null; dragPair.current = null; setSlotMap({}); setSwapSet(new Set()); }}
-                  className={`rounded-md px-1.5 py-1 leading-tight border border-black/15 cursor-grab text-[11px] ${ownCls(e)}`} style={cardStyle(e)} title="Blok 2JP — terseret sebagai satu kesatuan">
-                  <b>{e.scode}</b> • {e.class_name} • asal {e.day} JP{e.period}-{mate.period}
-                </div>);
-            }
+            const inBlock = !!(mate && parked.includes(mate.id));
+            if (inBlock && e.period > mate!.period) return null; // tampilkan sekali saja sebagai satu kesatuan 2JP
+            const ids = inBlock ? [e.id, mate!.id] : [e.id];
+            const asal = `${e.day} JP${e.period}${inBlock ? `-${mate!.period}` : ""}`;
             return (
-            <div key={id} draggable={e.mine} onDragStart={() => onDragStart(e)} onDragEnd={() => { clearDragStatus(); setDragId(null); dragEntry.current = null; dragPair.current = null; setSlotMap({}); setSwapSet(new Set()); }}
-              className={`rounded-md px-1.5 py-1 leading-tight border border-black/15 cursor-grab text-[11px] ${ownCls(e)}`} style={cardStyle(e)}>
-              <b>{e.scode}</b> • {e.class_name} • asal {e.day} JP{e.period}
-            </div>); })}
+              <span key={id} className="inline-flex items-center gap-1 rounded-md border border-amber-300 bg-white/80 px-1 py-0.5">
+                <div draggable={e.mine} onDragStart={() => onDragStart(e, inBlock ? mate!.id : null)} onDragEnd={() => { clearDragStatus(); setDragId(null); dragEntry.current = null; dragPair.current = null; setSlotMap({}); setSwapSet(new Set()); }}
+                  className={`rounded px-1 py-0.5 leading-tight border border-black/15 cursor-grab text-[11px] ${ownCls(e)}`} style={cardStyle(e)}
+                  title={inBlock ? `Blok 2JP — terseret sebagai satu kesatuan • asal ${asal}` : `Kartu 1JP • asal ${asal}`}>
+                  <b>{e.scode}</b> • {e.class_name} • asal {asal}
+                </div>
+                <button className="btn btn-ghost btn-xs px-1 text-amber-800" title="Batalkan parkir — kembalikan ke posisi semula"
+                  onClick={() => unpark(ids, `${e.scode} ${e.class_name} dikembalikan ke posisi semula (${asal}).`)}>↩</button>
+              </span>
+            ); })}
           {!parked.length && <span className="text-xs text-amber-600">(kosong)</span>}
         </div>
       </div>
